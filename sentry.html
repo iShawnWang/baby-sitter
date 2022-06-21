@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://browser.sentry-cdn.com/7.1.1/bundle.tracing.es5.debug.min.js"
+      integrity="sha384-/9SQ6qz6TJymRluY5v5sVlfXc3NYCbqViy0EYTIU9BpJUo4XjNCfHpgNEdrK7zAm"
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      Sentry.init({
+        dsn: "https://examplePublicKey@o0.ingest.sentry.io/0",
+        integrations: [new Sentry.BrowserTracing()],
+      });
+    </script>
+    <script>
+      myUndefinedFunction()
+    </script>
+    <script>
+      fetch('https://baidu.com', {method: 'POST', body: JSON.stringify({a: 1})})
+    </script>
+    <title>Document</title>
+  </head>
+  <body></body>
+</html>

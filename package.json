@@ -1,25 +1,27 @@
 {
-  "name": "seraph-sdk",
+  "name": "baby-sitter-sdk",
   "version": "1.0.0",
   "description": "",
   "main": "a.js",
   "scripts": {
+    "build": "tsup ./src/index.ts",
     "test": "playwright test",
     "test:headed": "playwright test --headed"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iShawnWang/seraph-sdk.git"
+    "url": "git+https://github.com/iShawnWang/baby-sitter-sdk.git"
   },
   "author": "wangshuai",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/iShawnWang/seraph-sdk/issues"
+    "url": "https://github.com/iShawnWang/baby-sitter-sdk/issues"
   },
-  "homepage": "https://github.com/iShawnWang/seraph-sdk#readme",
+  "homepage": "https://github.com/iShawnWang/baby-sitter-sdk#readme",
   "devDependencies": {
     "@apm-insight-web/upload-sourcemaps-webpack-plugin": "^1.0.0",
-    "@playwright/test": "^1.22.2"
+    "@playwright/test": "^1.22.2",
+    "tsup": "^6.1.3"
   },
   "dependencies": {
     "globby": "^13.1.2"

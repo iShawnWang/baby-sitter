@@ -9,14 +9,8 @@
     src="https://cdnjs.cloudflare.com/ajax/libs/stacktrace.js/2.0.2/stacktrace-with-promises-and-json-polyfills.js"
     integrity="sha512-POBhYWUMNdAitcQQCvxCMX5uL1p2sN/rtfkv8i6CpyREWyCCh+lUBIM8qcFzCxuAv7jVlaJj28rJz1DkZ9EDKA=="
     crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdn.jsdelivr.net/npm/tracekit@0.4.6/tracekit.min.js" crossorigin="anonymous"></script>
   <script>
-    TraceKit.report.subscribe(function yourLogger(errorReport) {
-      debugger
-    });
-  </script>
-  <script>
-    (function (n, e, r, t, a, o, s, i, c, l, f, m, p, u) { o = "precollect"; s = "getAttribute"; i = "addEventListener"; c = "PerformanceObserver"; l = function (e) { f = [].slice.call(arguments); f.push(Date.now(), location.href); (e == o ? l.p.a : l.q).push(f) }; l.q = []; l.p = { a: [] }; n[a] = l; m = document.createElement("script"); m.src = r + "?aid=" + t + "&globalName=" + a; m.crossorigin = "anonymous"; e.getElementsByTagName("head")[0].appendChild(m); if (i in n) { l.pcErr = function (e) { e = e || n.event; p = e.target || e.srcElement; if (p instanceof Element || p instanceof HTMLElement) { n[a](o, "st", { tagName: p.tagName, url: p[s]("href") || p[s]("src") }) } else { n[a](o, "err", e.error || e.message) } }; l.pcRej = function (e) { e = e || n.event; n[a](o, "err", e.reason || e.detail && e.detail.reason) }; n[i]("error", l.pcErr, true); n[i]("unhandledrejection", l.pcRej, true) } if ("PerformanceLongTaskTiming" in n) { u = l.pp = { entries: [] }; u.observer = new PerformanceObserver(function (e) { u.entries = u.entries.concat(e.getEntries()) }); u.observer.observe({ entryTypes: ["longtask", "largest-contentful-paint", "layout-shift"] }) } })(window, document, "./b.js", 0, "apmPlus");
+    (function(n,e,r,t,a,o,s,i,c,l,f,m,p,u){o="precollect";s="getAttribute";i="addEventListener";c="PerformanceObserver";l=function(e){f=[].slice.call(arguments);f.push(Date.now(),location.href);(e==o?l.p.a:l.q).push(f)};l.q=[];l.p={a:[]};n[a]=l;m=document.createElement("script");m.src=r+"?aid="+t+"&globalName="+a;m.crossorigin="anonymous";e.getElementsByTagName("head")[0].appendChild(m);if(i	in	n){l.pcErr=function(e){e=e||n.event;p=e.target||e.srcElement;if(p	instanceof	Element||p	instanceof	HTMLElement){n[a](o,"st",{tagName:p.tagName,url:p[s]("href")||p[s]("src")})}else{n[a](o,"err",e.error||e.message)}};l.pcRej=function(e){e=e||n.event;n[a](o,"err",e.reason||e.detail&&e.detail.reason)};n[i]("error",l.pcErr,true);n[i]("unhandledrejection",l.pcRej,true)}if("PerformanceLongTaskTiming"in	n){u=l.pp={entries:[]};u.observer=new	PerformanceObserver(function(e){u.entries=u.entries.concat(e.getEntries())});u.observer.observe({entryTypes:["longtask","largest-contentful-paint","layout-shift"]})}})(window,document,"https://apm.volccdn.com/mars-web/apmplus/web/browser.cn.js",0,"apmPlus");
   </script>
   <script>
     window.apmPlus("init", {
@@ -32,9 +26,10 @@
       setTimeout(() => {
         history.pushState({}, 'emm', "/voice?a=1")
       }, 2000);
-      await new Promise((resolve) => {
-        resolve(a.b())
-      })
+
+      var script = document.createElement('script');
+      script.src = 'https://baby-sitter-test-api.vercel.app/demo.js'
+      document.head.appendChild(script);
     }, 1000);
   </script>
   <title>Document</title>

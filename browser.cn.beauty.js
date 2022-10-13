@@ -1,22 +1,22 @@
 'use strict';
 !function() {
   /**
-   * @param {!Array} data
-   * @param {number} progress
+   * @param {!Array} value
+   * @param {number} manifest
    * @return {?}
    */
-  function done(data, progress) {
-    var value = "function" == typeof Symbol && data[Symbol.iterator];
-    if (!value) {
-      return data;
+  function done(value, manifest) {
+    var msg = "function" == typeof Symbol && value[Symbol.iterator];
+    if (!msg) {
+      return value;
     }
     var result;
     var mockConsole;
-    var entry = value.call(data);
+    var data = msg.call(value);
     /** @type {!Array} */
     var collector = [];
     try {
-      for (; (void 0 === progress || 0 < progress--) && !(result = entry.next()).done;) {
+      for (; (void 0 === manifest || 0 < manifest--) && !(result = data.next()).done;) {
         collector.push(result.value);
       }
     } catch (Console_error) {
@@ -25,8 +25,8 @@
       };
     } finally {
       try {
-        if (result && !result.done && (value = entry.return)) {
-          value.call(entry);
+        if (result && !result.done && (msg = data.return)) {
+          msg.call(data);
         }
       } finally {
         if (mockConsole) {
@@ -67,11 +67,11 @@
     });
   }
   /**
-   * @param {!Object} value
+   * @param {!Object} data
    * @return {?}
    */
-  function string(value) {
-    return value;
+  function noop(data) {
+    return data;
   }
   /**
    * @param {!Object} t
@@ -102,11 +102,11 @@
     return "[object Array]" === _.toString.call(obj);
   }
   /**
-   * @param {!Function} obj
+   * @param {!Function} value
    * @return {?}
    */
-  function isArray(obj) {
-    return "function" == typeof obj;
+  function isFunction(value) {
+    return "function" == typeof value;
   }
   /**
    * @param {boolean} value
@@ -116,56 +116,56 @@
     return "number" == typeof value;
   }
   /**
-   * @param {!Object} str
+   * @param {!Object} obj
    * @return {?}
    */
-  function isString(str) {
-    return "string" == typeof str;
+  function isArray(obj) {
+    return "string" == typeof obj;
   }
   /**
-   * @param {!Array} actual
+   * @param {!Array} date
    * @return {?}
    */
-  function isEmpty(actual) {
+  function n(date) {
     return "undefined" != typeof Event && function(impromptuInstance, Impromptu) {
       try {
         return impromptuInstance instanceof Impromptu;
       } catch (n) {
         return;
       }
-    }(actual, Event);
+    }(date, Event);
   }
   /**
    * @param {!Array} data
-   * @param {(Object|string)} result
+   * @param {(Object|string)} obj
    * @return {?}
    */
-  function replace(data, result) {
+  function parse(data, obj) {
     var key;
     var r;
-    var obj = extend({}, data);
-    for (key in result) {
+    var res = extend({}, data);
+    for (key in obj) {
       /** @type {string} */
       r = key;
-      if (Object.prototype.hasOwnProperty.call(result, r) && void 0 !== result[key]) {
-        if (callback(result[key]) && copy(result[key])) {
-          obj[key] = replace(callback(data[key]) ? data[key] : {}, result[key]);
+      if (Object.prototype.hasOwnProperty.call(obj, r) && void 0 !== obj[key]) {
+        if (callback(obj[key]) && copy(obj[key])) {
+          res[key] = parse(callback(data[key]) ? data[key] : {}, obj[key]);
         } else {
-          if (isObject(result[key]) && isObject(data[key])) {
-            obj[key] = function merge(value, name) {
+          if (isObject(obj[key]) && isObject(data[key])) {
+            res[key] = function merge(value, obj) {
               value = isObject(value) ? value : [];
-              name = isObject(name) ? name : [];
-              return Array.prototype.concat.call(value, name).map(function(value) {
-                return value instanceof RegExp ? value : callback(value) && copy(value) ? replace({}, value) : isObject(value) ? merge([], value) : value;
+              obj = isObject(obj) ? obj : [];
+              return Array.prototype.concat.call(value, obj).map(function(value) {
+                return value instanceof RegExp ? value : callback(value) && copy(value) ? parse({}, value) : isObject(value) ? merge([], value) : value;
               });
-            }(data[key], result[key]);
+            }(data[key], obj[key]);
           } else {
-            obj[key] = result[key];
+            res[key] = obj[key];
           }
         }
       }
     }
-    return obj;
+    return res;
   }
   /**
    * @param {!Object} key
@@ -194,7 +194,7 @@
    * @param {string} x
    * @return {?}
    */
-  function shallowCopy(obj, x) {
+  function trim(obj, x) {
     if (!isObject(obj)) {
       return obj;
     }
@@ -214,163 +214,163 @@
   function v(b, a, val) {
     var cookie;
     var i = (a = done(a.split(".")))[0];
-    var json = a.slice(1);
-    for (; b && 0 < json.length;) {
+    var res = a.slice(1);
+    for (; b && 0 < res.length;) {
       b = b[i];
-      i = (cookie = done(json))[0];
-      json = cookie.slice(1);
+      i = (cookie = done(res))[0];
+      res = cookie.slice(1);
     }
     if (b) {
       return val(b, i);
     }
   }
   /**
-   * @param {!NodeList} obj
+   * @param {!NodeList} value
    * @return {?}
    */
-  function toString(obj) {
-    return isObject(obj) && obj.length ? function(s) {
+  function toString(value) {
+    return isObject(value) && value.length ? function(params) {
       /** @type {!Array} */
       var defaultParts = [];
-      var g = s.length;
+      var actual_count = params.length;
       /** @type {number} */
-      var c = 0;
-      for (; c < g; c++) {
-        var params = s[c];
-        if (isString(params)) {
-          defaultParts.push(params.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1"));
+      var i = 0;
+      for (; i < actual_count; i++) {
+        var value = params[i];
+        if (isArray(value)) {
+          defaultParts.push(value.replace(/([.*+?^=!:${}()|[\]/\\])/g, "\\$1"));
         } else {
-          if (params && params.source) {
-            defaultParts.push(params.source);
+          if (value && value.source) {
+            defaultParts.push(value.source);
           }
         }
       }
       return new RegExp(defaultParts.join("|"), "i");
-    }(obj) : null;
+    }(value) : null;
   }
   /**
    * @param {!Object} value
    * @return {?}
    */
-  function parseInt(value) {
+  function stringify(value) {
     try {
-      return isString(value) ? value : JSON.stringify(value);
+      return isArray(value) ? value : JSON.stringify(value);
     } catch (creative_size) {
       return "[FAILED_TO_STRINGIFY]:" + String(creative_size);
     }
   }
   /**
-   * @param {!Object} data
+   * @param {!Object} p
    * @param {string} name
-   * @param {!Function} callback
+   * @param {!Function} f
    * @return {?}
    */
-  function request(data, name, callback) {
+  function map(p, name, f) {
     return function() {
       /** @type {!Array} */
-      var buffer = [];
+      var list = [];
       /** @type {number} */
       var i = 0;
       for (; i < arguments.length; i++) {
-        buffer[i] = arguments[i];
+        list[i] = arguments[i];
       }
-      if (!data) {
-        return b;
+      if (!p) {
+        return undefined;
       }
-      var a = data[name];
-      var r = callback.apply(void 0, fn([a], done(buffer), false));
-      var value = r;
-      return isArray(value) && (value = function() {
+      var a = p[name];
+      var t = f.apply(void 0, fn([a], done(list), false));
+      var value = t;
+      return isFunction(value) && (value = function() {
         /** @type {!Array} */
-        var f = [];
+        var value = [];
         /** @type {number} */
         var i = 0;
         for (; i < arguments.length; i++) {
-          f[i] = arguments[i];
+          value[i] = arguments[i];
         }
         try {
-          return r.apply(this, f);
+          return t.apply(this, value);
         } catch (n) {
-          return isArray(a) && a.apply(this, f);
+          return isFunction(a) && a.apply(this, value);
         }
-      }), data[name] = value, function(fireCallback) {
-        if (!(fireCallback && value !== data[name])) {
-          data[name] = a;
+      }), p[name] = value, function(fireCallback) {
+        if (!(fireCallback && value !== p[name])) {
+          p[name] = a;
         }
       };
     };
   }
   /**
-   * @param {!Object} message
+   * @param {!Object} src
    * @param {string} name
-   * @param {!Function} type
+   * @param {!Function} callback
    * @return {?}
    */
-  function require(message, name, type) {
+  function inject(src, name, callback) {
     return function() {
       /** @type {!Array} */
-      var buffer = [];
+      var list = [];
       /** @type {number} */
       var i = 0;
       for (; i < arguments.length; i++) {
-        buffer[i] = arguments[i];
+        list[i] = arguments[i];
       }
-      message[name] = type.apply(void 0, fn([message[name]], done(buffer), false));
+      src[name] = callback.apply(void 0, fn([src[name]], done(list), false));
     };
   }
   /**
    * @return {undefined}
    */
-  function add() {
+  function reject() {
     /** @type {!Array} */
-    var buffer = [];
+    var list = [];
     /** @type {number} */
     var i = 0;
     for (; i < arguments.length; i++) {
-      buffer[i] = arguments[i];
+      list[i] = arguments[i];
     }
-    console.warn.apply(console, fn(["[SDK]", Date.now(), ("" + nextGuid++).padStart(8, " ")], done(buffer), false));
+    console.warn.apply(console, fn(["[SDK]", Date.now(), ("" + nextGuid++).padStart(8, " ")], done(list), false));
   }
   /**
-   * @param {!NodeList} callbacks
+   * @param {!NodeList} s
    * @return {?}
    */
-  function then(callbacks) {
-    return function(jpegEncoded) {
+  function debug(s) {
+    return function(argV) {
       /** @type {!Array} */
-      var result = jpegEncoded;
+      var v = argV;
       /** @type {number} */
       var i = 0;
-      for (; i < callbacks.length && result; i++) {
+      for (; i < s.length && v; i++) {
         try {
-          result = callbacks[i](result);
-        } catch (rightCollapseNode) {
-          _process(rightCollapseNode);
+          v = s[i](v);
+        } catch (shouldBeRequestLine) {
+          inspect(shouldBeRequestLine);
         }
       }
-      return result;
+      return v;
     };
   }
   /**
    * @return {?}
    */
-  function template() {
+  function mobileLogin() {
     var upperCaseAlphabet = function() {
       /** @type {!Array} */
-      var result = new Array(16);
+      var value = new Array(16);
       /** @type {number} */
       var e = 0;
       /** @type {number} */
-      var indexIn = 0;
-      for (; indexIn < 16; indexIn++) {
-        if (0 == (3 & indexIn)) {
+      var lastPropName = 0;
+      for (; lastPropName < 16; lastPropName++) {
+        if (0 == (3 & lastPropName)) {
           /** @type {number} */
           e = 4294967296 * Math.random();
         }
         /** @type {number} */
-        result[indexIn] = e >>> ((3 & indexIn) << 3) & 255;
+        value[lastPropName] = e >>> ((3 & lastPropName) << 3) & 255;
       }
-      return result;
+      return value;
     }();
     return upperCaseAlphabet[6] = 15 & upperCaseAlphabet[6] | 64, upperCaseAlphabet[8] = 63 & upperCaseAlphabet[8] | 128, function(keys) {
       /** @type {!Array} */
@@ -407,13 +407,13 @@
   /**
    * @return {?}
    */
-  function clone() {
+  function error() {
     return apply() && window.location;
   }
   /**
    * @return {?}
    */
-  function debug() {
+  function match() {
     if (apply() && callback(window.performance)) {
       return window.performance;
     }
@@ -421,15 +421,15 @@
   /**
    * @return {?}
    */
-  function encode() {
-    if ("function" == typeof XMLHttpRequest && isArray(XMLHttpRequest)) {
+  function check() {
+    if ("function" == typeof XMLHttpRequest && isFunction(XMLHttpRequest)) {
       return XMLHttpRequest;
     }
   }
   /**
    * @return {?}
    */
-  function goFetch() {
+  function handleRequest() {
     try {
       return new Headers, new Request(""), new Response, window.fetch;
     } catch (n) {
@@ -438,24 +438,24 @@
   /**
    * @return {?}
    */
-  function compile() {
-    if (apply() && isArray(window.MutationObserver)) {
+  function def() {
+    if (apply() && isFunction(window.MutationObserver)) {
       return window.MutationObserver;
     }
   }
   /**
    * @return {?}
    */
-  function map() {
-    if (apply() && isArray(window.PerformanceObserver)) {
+  function clone() {
+    if (apply() && isFunction(window.PerformanceObserver)) {
       return window.PerformanceObserver;
     }
   }
   /**
    * @return {?}
    */
-  function func() {
-    var result = debug();
+  function getTime() {
+    var result = match();
     if (result && callback(result.timing)) {
       return result.timing;
     }
@@ -517,19 +517,19 @@
   /**
    * @return {?}
    */
-  function toJSON() {
-    var fontAwesomeLink = apply() && clone();
+  function emit() {
+    var fontAwesomeLink = apply() && error();
     return null == fontAwesomeLink ? void 0 : fontAwesomeLink.href;
   }
   /**
-   * @param {string} a
+   * @param {string} context
    * @return {?}
    */
-  function parse(a) {
+  function run(context) {
     try {
       var e;
       /** @type {string} */
-      var t = a;
+      var parent = context;
       /** @type {!Array} */
       var r = [];
       /** @type {number} */
@@ -538,25 +538,25 @@
       var i = 0;
       /** @type {number} */
       var channelCount = " > ".length;
-      for (; t && o++ < 5 && !("html" === (e = function(result) {
+      for (; parent && o++ < 5 && !("html" === (e = function(value) {
         var compare_string;
         var key;
         var clearChatButton;
         var idx;
         /** @type {string} */
-        var action = result;
+        var i = value;
         /** @type {!Array} */
         var signatureString = [];
-        if (!action || !action.tagName) {
+        if (!i || !i.tagName) {
           return "";
         }
-        signatureString.push(action.tagName.toLowerCase());
-        if (action.id) {
-          signatureString.push("#" + action.id);
+        signatureString.push(i.tagName.toLowerCase());
+        if (i.id) {
+          signatureString.push("#" + i.id);
         }
-        result = action.className;
-        if (result && isString(result)) {
-          compare_string = result.split(/\s+/);
+        value = i.className;
+        if (value && isArray(value)) {
+          compare_string = value.split(/\s+/);
           /** @type {number} */
           idx = 0;
           for (; idx < compare_string.length; idx++) {
@@ -569,45 +569,45 @@
         idx = 0;
         for (; idx < props.length; idx++) {
           key = props[idx];
-          if (clearChatButton = action.getAttribute(key)) {
+          if (clearChatButton = i.getAttribute(key)) {
             signatureString.push("[" + key + '="' + clearChatButton + '"]');
           }
         }
         return signatureString.join("");
-      }(t)) || 1 < o && 80 <= i + r.length * channelCount + e.length);) {
+      }(parent)) || 1 < o && 80 <= i + r.length * channelCount + e.length);) {
         r.push(e);
         i = i + e.length;
-        t = t.parentNode;
+        parent = parent.parentNode;
       }
       return r.reverse().join(" > ");
     } catch (n) {
-      return auto;
+      return value;
     }
   }
   /**
-   * @param {number} callback
+   * @param {number} i
    * @return {?}
    */
-  function error(callback) {
+  function pipe(i) {
     /**
      * @param {string} name
-     * @param {?} callback
+     * @param {?} cb
      * @return {?}
      */
-    function wrap(name, callback) {
+    function pipe(name, cb) {
       var last;
       return function(elem) {
-        fn = void 0;
+        _takingTooLongTimeout = void 0;
         if (elem && last !== elem) {
-          callback({
+          cb({
             event : last = elem,
             name : name
           });
         }
       };
     }
-    var fn;
-    return [wrap, function(options) {
+    var _takingTooLongTimeout;
+    return [pipe, function(options) {
       return function(context) {
         var target;
         try {
@@ -617,25 +617,25 @@
         }
         var htmlElementName = target && target.tagName;
         if (htmlElementName && ("INPUT" === htmlElementName || "TEXTAREA" === htmlElementName || target.isContentEditable)) {
-          if (!fn) {
-            wrap("input", options)(context);
+          if (!_takingTooLongTimeout) {
+            pipe("input", options)(context);
           }
-          clearTimeout(fn);
-          fn = window.setTimeout(function() {
-            fn = void 0;
-          }, callback);
+          clearTimeout(_takingTooLongTimeout);
+          _takingTooLongTimeout = window.setTimeout(function() {
+            _takingTooLongTimeout = void 0;
+          }, i);
         }
       };
     }];
   }
   /**
    * @param {?} callback
-   * @param {string} type
+   * @param {string} selector
    * @return {?}
    */
-  function assert(callback, type) {
+  function compare(callback, selector) {
     return function(channelErr) {
-      if (type) {
+      if (selector) {
         try {
           callback(channelErr);
         } catch (n) {
@@ -644,64 +644,64 @@
     };
   }
   /**
-   * @param {!Function} function_top
+   * @param {!Function} clearColor
    * @return {undefined}
    */
-  function initialize(function_top) {
+  function clear(clearColor) {
     var tag = apply();
     var root = join();
     if (tag && root) {
       if ("complete" !== root.readyState) {
         tag.addEventListener("load", function() {
           setTimeout(function() {
-            function_top();
+            clearColor();
           }, 0);
         }, false);
       } else {
-        function_top();
+        clearColor();
       }
     }
   }
   /**
-   * @param {!Function} cb
+   * @param {!Function} callback
    * @return {undefined}
    */
-  function change(cb) {
-    var change;
+  function ready(callback) {
+    var init;
     if ("hidden" !== document.visibilityState) {
       /**
        * @return {undefined}
        */
-      change = function() {
+      init = function() {
         if ("hidden" === document.visibilityState) {
-          cb();
-          removeEventListener("visibilitychange", change, true);
+          callback();
+          removeEventListener("visibilitychange", init, true);
         }
       };
-      addEventListener("visibilitychange", change, true);
+      addEventListener("visibilitychange", init, true);
     } else {
-      cb();
+      callback();
     }
   }
   /**
-   * @param {string} b
-   * @param {!Object} a
+   * @param {string} a
+   * @param {!Object} b
    * @return {?}
    */
-  function expect(b, a) {
-    return !(!b || !a) && (inlineAttributeCommentRegex.test(b) || inlineAttributeIgnoreCommentRegex.test(a));
+  function ok(a, b) {
+    return !(!a || !b) && (inlineAttributeCommentRegex.test(a) || inlineAttributeIgnoreCommentRegex.test(b));
   }
   /**
    * @param {!Object} request
-   * @param {?} date
-   * @param {!Object} cb
+   * @param {string} handler
+   * @param {!Object} data
    * @return {?}
    */
-  function handler(request, date, cb) {
+  function update(request, handler, data) {
     var method = request._method;
     var headers = request._reqHeaders;
     var url = request._url;
-    var data = request._start;
+    var start = request._start;
     var err = request._data;
     data = {
       api : "xhr",
@@ -709,48 +709,67 @@
         url : getText(url),
         method : (method || "").toLowerCase(),
         headers : headers,
-        timestamp : data
+        timestamp : start
       },
       response : {
         status : request.status || 0,
         is_custom_error : false,
-        timing : cb(request.responseURL),
+        timing : data(request.responseURL),
         timestamp : Date.now()
       },
-      duration : Date.now() - data
+      duration : Date.now() - start
     };
     if ("function" == typeof request.getAllResponseHeaders) {
-      data.response.headers = isString(s = request.getAllResponseHeaders()) && s ? s.split("\r\n").reduce(function(kLabels, c) {
-        var n;
-        return isString(c) && (c = (n = done(c.split(": "), 2))[0], n = n[1], expect(c, n) || (kLabels[c.toLowerCase()] = n)), kLabels;
+      data.response.headers = isArray(args = request.getAllResponseHeaders()) && args ? args.split("\r\n").reduce(function(model_colors, b) {
+        var a;
+        return isArray(b) && (b = (a = done(b.split(": "), 2))[0], a = a[1], ok(b, a) || (model_colors[b.toLowerCase()] = a)), model_colors;
       }, {}) : {};
     }
-    var s = data.response.status;
-    return date.collectBodyOnError && 400 <= s && (data.request.body = err ? "" + err : void 0, data.response.body = request.response ? "" + request.response : void 0), data;
+    start = data.response.status;
+    var args = handler.collectBodyOnError;
+    handler = handler.extraExtractor;
+    try {
+      var body = null == handler ? void 0 : handler(request.response, data);
+      if (body) {
+        data.extra = body;
+      }
+      if (body) {
+        /** @type {boolean} */
+        data.response.is_custom_error = true;
+      }
+      if (args && 400 <= start) {
+        /** @type {(string|undefined)} */
+        data.request.body = err ? "" + err : void 0;
+        /** @type {(string|undefined)} */
+        data.response.body = request.response ? "" + request.response : void 0;
+      }
+    } catch (n) {
+    }
+    return data;
   }
   /**
-   * @param {!Function} result
-   * @param {!Object} value
+   * @param {!Function} text
+   * @param {!Object} group
    * @return {?}
    */
-  function checkResult(result, value) {
-    return !!(result = toString(result || [])) && result.test(value);
+  function mergeExtensions(text, group) {
+    return !!(text = toString(text || [])) && text.test(group);
   }
   /**
-   * @param {!Array} data
+   * @param {!Array} name
    * @return {?}
    */
-  function ok(data) {
-    var $ = done(test(data), 5)[4];
-    return function(selector) {
-      return $(selector).pop();
+  function f(name) {
+    var split = done(next(name), 5)[4];
+    return function(url) {
+      return split(url).pop();
     };
   }
   /**
    * @param {!Function} o
    * @return {?}
    */
-  function success(o) {
+  function build(o) {
     return function() {
       /** @type {!Array} */
       var f = [];
@@ -761,19 +780,19 @@
       }
       this._reqHeaders = this._reqHeaders || {};
       var result = done(f, 2);
-      var item = result[0];
+      var r = result[0];
       result = result[1];
-      return expect(item, result) || (this._reqHeaders[item.toLowerCase()] = result), o && o.apply(this, f);
+      return ok(r, result) || (this._reqHeaders[r.toLowerCase()] = result), o && o.apply(this, f);
     };
   }
   /**
-   * @param {!Function} t
-   * @param {?} type
-   * @param {!Object} options
-   * @param {number} listener
+   * @param {!Function} fn
+   * @param {?} buffer
+   * @param {!Object} filename
+   * @param {number} index
    * @return {?}
    */
-  function load(t, type, options, listener) {
+  function validate(fn, buffer, filename, index) {
     return function() {
       var response;
       var cb;
@@ -784,7 +803,7 @@
       for (; i < arguments.length; i++) {
         obj[i] = arguments[i];
       }
-      return cb = listener, require(response = this, "onreadystatechange", function(callback, config, dispatch) {
+      return cb = index, inject(response = this, "onreadystatechange", function(callback, options, dispatch) {
         return function() {
           /** @type {!Array} */
           var args = [];
@@ -794,25 +813,25 @@
             args[i] = arguments[i];
           }
           try {
-            if (4 === this.readyState && !checkResult(config.ignoreUrls, response._url) && dispatch) {
+            if (4 === this.readyState && !mergeExtensions(options.ignoreUrls, response._url) && dispatch) {
               dispatch({
                 ev_type : "http",
-                payload : handler(response, config, cb)
+                payload : update(response, options, cb)
               });
             }
-          } catch (modModuleList) {
-            each(modModuleList);
+          } catch (delayFn) {
+            expect(delayFn);
           }
           return callback && callback.apply(this, args);
         };
-      })(type, type.hookCbAtReq(options)), this._start = Date.now(), this._data = null == obj ? void 0 : obj[0], t.apply(this, obj);
+      })(buffer, buffer.hookCbAtReq(filename)), this._start = Date.now(), this._data = null == obj ? void 0 : obj[0], fn.apply(this, obj);
     };
   }
   /**
-   * @param {!Function} callback
+   * @param {!Function} fn
    * @return {?}
    */
-  function fetch(callback) {
+  function Promise(fn) {
     return function() {
       var urls;
       /** @type {!Array} */
@@ -822,30 +841,30 @@
       for (; i < arguments.length; i++) {
         results[i] = arguments[i];
       }
-      return urls = done(results, 2), this._method = urls[0], this._url = urls[1], callback.apply(this, results);
+      return urls = done(results, 2), this._method = urls[0], this._url = urls[1], fn.apply(this, results);
     };
   }
   /**
-   * @param {!Object} service
-   * @param {number} callback
-   * @param {number} options
-   * @param {?} next
+   * @param {!Object} app
+   * @param {number} type
+   * @param {number} res
+   * @param {?} status
    * @return {undefined}
    */
-  function exec(service, callback, options, next) {
-    require(service, "open", fetch)();
-    require(service, "setRequestHeader", success)();
-    require(service, "send", load)(callback, options, next);
+  function equal(app, type, res, status) {
+    inject(app, "open", Promise)();
+    inject(app, "setRequestHeader", build)();
+    inject(app, "send", validate)(type, res, status);
   }
   /**
-   * @param {!Object} obj
+   * @param {!Object} context
    * @param {string} item
-   * @param {number} data
+   * @param {number} value
    * @return {?}
    */
-  function wrap(obj, item, data) {
-    item = null === (obj = obj.config()) || void 0 === obj ? void 0 : obj.plugins[item];
-    return callback(item) ? extend(extend({}, data), item) : !!item && data;
+  function wrap(context, item, value) {
+    item = null === (context = context.config()) || void 0 === context ? void 0 : context.plugins[item];
+    return callback(item) ? extend(extend({}, value), item) : !!item && value;
   }
   /**
    * @param {!Object} b
@@ -867,20 +886,20 @@
     for (; i < arguments.length; i++) {
       effects[i - 1] = arguments[i];
     }
-    return effects.reduce(function(a, options) {
-      return (new object(options)).forEach(function(val, s) {
-        return !expect(s, val) && (a[s] = val);
-      }), a;
+    return effects.reduce(function(exists, options) {
+      return (new object(options)).forEach(function(f, k) {
+        return !ok(k, f) && (exists[k] = f);
+      }), exists;
     }, {});
   }
   /**
-   * @param {!Object} config
-   * @param {!Object} method
-   * @param {!Function} data
+   * @param {!Object} options
+   * @param {!Object} context
+   * @param {!Function} f
    * @return {?}
    */
-  function getScript(config, method, data) {
-    return has(config, data) ? config.body : null == method ? void 0 : method.body;
+  function first(options, context, f) {
+    return has(options, f) ? options.body : null == context ? void 0 : context.body;
   }
   /**
    * @param {string} name
@@ -900,130 +919,146 @@
     };
   }
   /**
-   * @param {?} resolve
-   * @param {?} opts
-   * @param {!Object} db
-   * @param {number} options
-   * @param {!Function} data
+   * @param {?} f
+   * @param {?} options
+   * @param {!Object} data
+   * @param {number} query
+   * @param {!Function} c
    * @param {?} callback
    * @return {?}
    */
-  function create(resolve, opts, db, options, data, callback) {
-    return function(item, method) {
-      var active;
-      var okfunc;
+  function load(f, options, data, query, c, callback) {
+    return function(value, method) {
       var val;
-      var value = resolve(item, method = void 0 === method ? {} : method);
-      val = (okfunc = false, val = "", val = has(active = item, data) ? active.url : active, val = !(okfunc = void 0 !== okfunc && okfunc) && isString(val) ? val.split("?")[0] : val);
-      if (!function(type) {
-        if (isString(type)) {
-          var externalTypes = done(type.split(":"), 2);
-          type = externalTypes[0];
-          return !externalTypes[1] || "http" === type || "https" === type;
+      var maskset;
+      var opts;
+      var result = f(value, method = void 0 === method ? {} : method);
+      opts = (maskset = false, opts = "", opts = has(val = value, c) ? val.url : val, opts = !(maskset = void 0 !== maskset && maskset) && isArray(opts) ? opts.split("?")[0] : opts);
+      if (!function(schema) {
+        if (isArray(schema)) {
+          var result = done(schema.split(":"), 2);
+          schema = result[0];
+          return !result[1] || "http" === schema || "https" === schema;
         }
-      }(val) || checkResult(opts.ignoreUrls, val)) {
-        return value;
+      }(opts) || mergeExtensions(options.ignoreUrls, opts)) {
+        return result;
       }
-      var put = opts.hookCbAtReq(db);
-      var info = {
+      var put = options.hookCbAtReq(data);
+      var item = {
         api : "fetch",
-        request : get(item instanceof data ? item.url : item, item, method, data),
+        request : get(value instanceof c ? value.url : value, value, method, c),
         response : {
           is_custom_error : false
         },
         duration : 0
       };
       try {
-        info.request.headers = assign(options, item.headers, method.headers);
-      } catch (formOrder) {
-        each(formOrder);
+        item.request.headers = assign(query, value.headers, method.headers);
+      } catch (delayFn) {
+        expect(delayFn);
       }
       /**
        * @return {undefined}
        */
-      var upload = function() {
+      var parse = function() {
         if (put) {
           put({
             ev_type : "http",
-            payload : info
+            payload : item
           });
         }
       };
-      return value.then(function(res) {
+      return result.then(function(res) {
         var el;
         try {
-          info.response.status = res.status || 0;
-          info.response.headers = assign(options, res.headers);
+          item.response.status = res.status || 0;
+          item.response.headers = assign(query, res.headers);
           /** @type {number} */
-          info.duration = Date.now() - info.request.timestamp;
-          if (opts.collectBodyOnError && 400 <= res.status) {
-            info.request.body = null === (el = getScript(item, method, data)) || void 0 === el ? void 0 : el.toString();
+          item.duration = Date.now() - item.request.timestamp;
+          var pagesToDisplay = options.collectBodyOnError;
+          var merge = options.extraExtractor;
+          try {
+            if (merge) {
+              res.clone().json().then(function(data) {
+                data = merge(data, item);
+                if (data) {
+                  /** @type {!Object} */
+                  item.extra = data;
+                  /** @type {boolean} */
+                  item.response.is_custom_error = true;
+                }
+              });
+            }
+          } catch (n) {
+          }
+          if (pagesToDisplay && 400 <= res.status) {
+            item.request.body = null === (el = first(value, method, c)) || void 0 === el ? void 0 : el.toString();
           }
           setTimeout(function() {
-            info.response.timing = callback(res.url);
-            upload();
+            item.response.timing = callback(res.url);
+            parse();
           }, 100);
-        } catch (formOrder) {
-          each(formOrder);
+        } catch (delayFn) {
+          expect(delayFn);
         }
       }, function() {
         var el;
         try {
           /** @type {number} */
-          info.response.status = 0;
+          item.response.status = 0;
           /** @type {number} */
-          info.duration = Date.now() - info.request.timestamp;
-          if (opts.collectBodyOnError) {
-            info.request.body = null === (el = getScript(item, method, data)) || void 0 === el ? void 0 : el.toString();
+          item.duration = Date.now() - item.request.timestamp;
+          if (options.collectBodyOnError) {
+            item.request.body = null === (el = first(value, method, c)) || void 0 === el ? void 0 : el.toString();
           }
-        } catch (formOrder) {
-          each(formOrder);
+        } catch (delayFn) {
+          expect(delayFn);
         }
-        upload();
-      }), value;
+        parse();
+      }), result;
     };
   }
   /**
-   * @param {!Array} name
+   * @param {!Array} o
    * @return {?}
    */
-  function list(name) {
+  function find(o) {
     var value;
-    var v;
+    var m;
     var options;
-    return !function(o) {
-      switch(Object.prototype.toString.call(o)) {
+    return !function(date) {
+      switch(Object.prototype.toString.call(date)) {
         case "[object Error]":
         case "[object Exception]":
         case "[object DOMError]":
         case "[object DOMException]":
           return 1;
         default:
-          return o instanceof Error;
+          return date instanceof Error;
       }
-    }(name) ? (copy(name) || isEmpty(name) || isString(name)) && (value = {
-      message : parseInt(name)
-    }) : (options = fields, value = (v = name) && callback(v) ? options.reduce(function(array, i) {
-      return array[i] = v[i], array;
-    }, {}) : v), value;
+    }(o) ? (copy(o) || n(o) || isArray(o)) && (value = {
+      message : stringify(o)
+    }) : (options = fields, value = (m = o) && callback(m) ? options.reduce(function(options, k) {
+      return options[k] = m[k], options;
+    }, {}) : m), value;
   }
   /**
-   * @param {!Object} opts
+   * @param {!Object} type
    * @return {?}
    */
-  function filter(opts) {
-    return list(opts.error);
+  function e(type) {
+    return find(type.error);
   }
   /**
-   * @param {!Object} e
+   * @param {!Object} result
    * @return {?}
    */
-  function render(e) {
+  function handler(result) {
     var info;
     try {
       var message = void 0;
-      if ("reason" in e ? message = e.reason : "detail" in e && "reason" in e.detail && (message = e.detail.reason), message) {
-        var data = list(message);
+      if ("reason" in result ? message = result.reason : "detail" in result && "reason" in result.detail && (message = result.detail.reason), message) {
+        var data = find(message);
         return extend(extend({}, data), {
           name : null !== (info = data && data.name) && void 0 !== info ? info : "UnhandledRejection"
         });
@@ -1032,34 +1067,34 @@
     }
   }
   /**
-   * @param {!Array} x
+   * @param {!Array} b
    * @return {?}
    */
-  function h(x) {
-    return "[object ErrorEvent]" === Object.prototype.toString.call(x) ? filter(x) : ("[object PromiseRejectionEvent]" === Object.prototype.toString.call(x) ? render : list)(x);
+  function g(b) {
+    return "[object ErrorEvent]" === Object.prototype.toString.call(b) ? e(b) : ("[object PromiseRejectionEvent]" === Object.prototype.toString.call(b) ? handler : find)(b);
   }
   /**
-   * @param {!Function} e
+   * @param {!Function} test
    * @return {?}
    */
-  function invoke(e) {
+  function create(test) {
     /**
-     * @param {!Object} data
+     * @param {!Object} fn
      * @return {?}
      */
-    function wrap(data) {
-      return isArray(data) ? data._w_ || (data._w_ = function() {
+    function wrap(fn) {
+      return isFunction(fn) ? fn._w_ || (fn._w_ = function() {
         try {
-          return (data.handleEvent || data).apply(this, [].map.call(arguments, wrap));
-        } catch (a) {
-          throw g && e(list(a)), a;
+          return (fn.handleEvent || fn).apply(this, [].map.call(arguments, wrap));
+        } catch (value) {
+          throw sprite && test(find(value)), value;
         }
-      }) : data;
+      }) : fn;
     }
     /** @type {boolean} */
-    var g = true;
-    return methods.forEach(function(module) {
-      return window[module] && require(window, module, function(callback) {
+    var sprite = true;
+    return methods.forEach(function(property) {
+      return window[property] && inject(window, property, function(callback) {
         return function(n) {
           /** @type {!Array} */
           var list = [];
@@ -1071,9 +1106,9 @@
           return callback && callback.call.apply(callback, fn([this, wrap(n)], done(list), false));
         };
       })();
-    }), require(XMLHttpRequest.prototype, "send", function(fToRetry) {
+    }), inject(XMLHttpRequest.prototype, "send", function(fToRetry) {
       return function() {
-        var library = this;
+        var tokens = this;
         /** @type {!Array} */
         var args = [];
         /** @type {number} */
@@ -1081,33 +1116,33 @@
         for (; i < arguments.length; i++) {
           args[i] = arguments[i];
         }
-        return props.forEach(function(mod) {
-          return library[mod] && require(library, mod, wrap)();
+        return props.forEach(function(current) {
+          return tokens[current] && inject(tokens, current, wrap)();
         }), fToRetry.apply(this, args);
       };
-    })(), eventTargets.forEach(function(obj) {
-      obj = window[obj].prototype;
-      if (obj[parent]) {
-        require(obj, parent, function(callback) {
+    })(), eventTargets.forEach(function(api) {
+      api = window[api] && window[api].prototype;
+      if (api && api[property]) {
+        inject(api, property, function(callback) {
           return function(args, self, extra) {
             try {
-              var f = self.handleEvent;
-              if (isArray(f)) {
-                self.handleEvent = wrap(f);
+              var fn = self.handleEvent;
+              if (isFunction(fn)) {
+                self.handleEvent = wrap(fn);
               }
             } catch (n) {
             }
             return callback && callback.call(this, args, wrap(self), extra);
           };
         })();
-        require(obj, "removeEventListener", function(ctx) {
+        inject(api, "removeEventListener", function(ctx) {
           return function(n, right, fontHeight) {
             return null != right && right._w_ && ctx.call(this, n, right._w_, fontHeight), ctx.call(this, n, right, fontHeight);
           };
         })();
       }
     }), function() {
-      return g = false;
+      return sprite = false;
     };
   }
   /**
@@ -1115,34 +1150,34 @@
    * @param {string} token2
    * @return {?}
    */
-  function reject(token1, token2) {
+  function logger(token1, token2) {
     return token1 && token2 && token1 === token2;
   }
   /**
    * @return {?}
    */
-  function some() {
-    var callback;
-    return function(to) {
+  function connect() {
+    var result;
+    return function(wrapped) {
       try {
-        if (error = callback, !(!(e = to) || !error) && !(!reject(e.message, error.message) && !reject(e.stack, error.stack))) {
-          return void(callback = to);
+        if (err = result, !(!(e = wrapped) || !err) && !(!logger(e.message, err.message) && !logger(e.stack, err.stack))) {
+          return void(result = wrapped);
         }
-      } catch (formOrder) {
-        each(formOrder);
+      } catch (delayFn) {
+        expect(delayFn);
       }
       var e;
-      var error;
-      return callback = to;
+      var err;
+      return result = wrapped;
     };
   }
   /**
    * @param {string} attr
    * @return {?}
    */
-  function setAttribute(attr) {
-    return attr = "link" === (target = attr).tagName.toLowerCase() ? "href" : "src", isArray(target.getAttribute) ? target.getAttribute(attr) || "" : target[attr] || "";
-    var target;
+  function template(attr) {
+    return attr = "link" === (el = attr).tagName.toLowerCase() ? "href" : "src", isFunction(el.getAttribute) ? el.getAttribute(attr) || "" : el[attr] || "";
+    var el;
   }
   /**
    * @param {string} str
@@ -1156,22 +1191,22 @@
     }, defaults);
   }
   /**
-   * @param {string} clientId
+   * @param {string} value
    * @return {?}
    */
-  function register(clientId) {
+  function register(value) {
     return {
       ev_type : "performance",
-      payload : clientId
+      payload : value
     };
   }
   /**
-   * @param {!Array} value
+   * @param {!Array} options
    * @param {!Array} name
    * @return {?}
    */
-  function execute(value, name) {
-    return void 0 === value && (value = map()), void 0 === name && (name = debug()), function(n, result) {
+  function link(options, name) {
+    return void 0 === options && (options = clone()), void 0 === name && (name = match()), function(n, e) {
       /**
        * @param {!Object} t
        * @return {undefined}
@@ -1184,167 +1219,167 @@
         apply(cal);
       }
       var cal = $("fid", 0);
-      var apply = done(call(result), 1)[0];
-      if (!name || !value) {
+      var apply = done(push(e), 1)[0];
+      if (!name || !options) {
         return cal.isSupport = false, void apply(cal);
       }
-      result = (0, done(test(name), 3)[2])(artistTrack)[0];
-      if (result) {
-        stop(result);
+      e = (0, done(next(name), 3)[2])(GET_AUTH_URL_TIMEOUT)[0];
+      if (e) {
+        stop(e);
       } else {
-        (0, done(push(value, stop, true), 1)[0])(artistTrack);
+        (0, done(forEach(options, stop, true), 1)[0])(GET_AUTH_URL_TIMEOUT);
       }
     };
   }
   /**
-   * @param {!Array} res
+   * @param {!Array} options
    * @return {?}
    */
-  function setup(res) {
-    return void 0 === res && (res = map()), function(value, values) {
-      value = value.precollect;
-      var options = $("lcp", 0);
-      var r = done(call(values), 1)[0];
-      if (!res) {
-        return options.isSupport = false, void r(options);
+  function plugin(options) {
+    return void 0 === options && (options = clone()), function(keys, error) {
+      keys = keys.precollect;
+      var tag = $("lcp", 0);
+      var split = done(push(error), 1)[0];
+      if (!options) {
+        return tag.isSupport = false, void split(tag);
       }
-      (value.entries || []).forEach(function(attrs) {
+      (keys.entries || []).forEach(function(attrs) {
         var entryType = attrs.entryType;
         attrs = attrs.startTime;
-        if (entryType === which) {
+        if (entryType === buffer) {
           /** @type {!Object} */
-          options.value = attrs;
+          tag.value = attrs;
         }
       });
-      values = done(push(res, function(d) {
-        d = d.startTime;
+      error = done(forEach(options, function(value) {
+        value = value.startTime;
         /** @type {!Object} */
-        options.value = d;
+        tag.value = value;
       }), 2);
-      value = values[0];
-      var med = values[1];
-      value(which);
+      keys = error[0];
+      var convertMathArrayToAsmjs = error[1];
+      keys(buffer);
       /**
        * @return {undefined}
        */
-      var callback = function() {
-        med();
+      var convert = function() {
+        convertMathArrayToAsmjs();
         pointerEvents.forEach(function(type) {
-          window.removeEventListener(type, update, true);
+          window.removeEventListener(type, fn, true);
         });
       };
       /**
        * @return {undefined}
        */
-      var update = function() {
-        r(options);
-        callback();
+      var fn = function() {
+        split(tag);
+        convert();
       };
       pointerEvents.forEach(function(n) {
-        window.addEventListener(n, update, true);
+        window.addEventListener(n, fn, true);
       });
-      change(function() {
+      ready(function() {
         /** @type {boolean} */
-        options.isSupport = false;
-        update();
+        tag.isSupport = false;
+        fn();
       });
-      addEventListener(function() {
+      on(function() {
         /** @type {boolean} */
-        options.isBounced = true;
-        update();
+        tag.isBounced = true;
+        fn();
       });
     };
   }
   /**
-   * @param {!Array} result
-   * @param {!Array} value
+   * @param {!Array} options
+   * @param {!Array} results
    * @return {?}
    */
-  function expand(result, value) {
-    return void 0 === result && (result = map()), void 0 === value && (value = debug()), function(item, cb) {
-      var r = item.metricName;
+  function test(options, results) {
+    return void 0 === options && (options = clone()), void 0 === results && (results = match()), function(item, e) {
+      var start = item.metricName;
       var name = item.entryName;
-      var s = $(r, 0);
-      var split = done(call(cb), 1)[0];
-      if (!value || !result) {
-        return s.isSupport = false, void split(s);
+      var s = $(start, 0);
+      var postMessage = done(push(e), 1)[0];
+      if (!results || !options) {
+        return s.isSupport = false, void postMessage(s);
       }
-      var func;
+      var v0;
       /**
-       * @param {string} t
+       * @param {!Object} t
        * @return {undefined}
        */
-      var callback = function(t) {
+      var draw = function(t) {
         t = t.startTime;
-        /** @type {string} */
+        /** @type {!Object} */
         s.value = t;
-        split(s);
+        postMessage(s);
       };
-      r = (0, done(test(value), 5)[4])(name)[0];
-      if (r) {
-        callback(r);
+      start = (0, done(next(results), 5)[4])(name)[0];
+      if (start) {
+        draw(start);
       } else {
-        r = (cb = done(push(result, function(m) {
-          if (m.name === name) {
-            callback(m);
-            func();
+        start = (e = done(forEach(options, function(e) {
+          if (e.name === name) {
+            draw(e);
+            v0();
           }
         }), 2))[0];
-        func = cb[1];
-        r("paint");
-        change(function() {
+        v0 = e[1];
+        start("paint");
+        ready(function() {
           /** @type {boolean} */
           s.isSupport = false;
-          split(s);
-          func();
+          postMessage(s);
+          v0();
         });
-        addEventListener(function() {
+        on(function() {
           /** @type {boolean} */
           s.isBounced = true;
-          split(s);
-          func();
+          postMessage(s);
+          v0();
         });
       }
     };
   }
   /**
+   * @param {!Array} options
    * @param {!Array} result
-   * @param {!Array} error
    * @return {?}
    */
-  function save(result, error) {
-    return void 0 === result && (result = map()), void 0 === error && (error = debug()), function(cookie, value) {
+  function query(options, result) {
+    return void 0 === options && (options = clone()), void 0 === result && (result = match()), function(cookie, e) {
       var s = $("mpfid", 0);
-      var cb = done(call(value), 1)[0];
-      if (!result) {
-        return s.isSupport = false, cb(s), [b];
+      var sequence = done(push(e), 1)[0];
+      if (!options) {
+        return s.isSupport = false, sequence(s), [undefined];
       }
       /** @type {!Array} */
       var colorDist = [];
-      value = cookie.precollect;
-      if (value) {
-        (value.entries || []).forEach(function(n) {
-          if (n.entryType === type) {
+      e = cookie.precollect;
+      if (e) {
+        (e.entries || []).forEach(function(n) {
+          if (n.entryType === div) {
             colorDist.push(n);
           }
         });
       }
-      cookie = done(push(result, function(n) {
+      cookie = done(forEach(options, function(n) {
         return colorDist.push(n);
       }), 2);
-      value = cookie[0];
+      e = cookie[0];
       var uid = cookie[1];
-      value(type);
+      e(div);
       return [function() {
         uid();
-        var watchState = (0, done(test(error), 5)[4])(entryName)[0];
+        var watchState = (0, done(next(result), 5)[4])(entryName)[0];
         var ri = watchState && watchState.startTime || 0;
         s.value = colorDist.reduce(function(li, e) {
           var r = e.duration;
           e = e.startTime;
           return li < r && ri < e ? r : li;
         }, 0);
-        cb(s);
+        sequence(s);
       }];
     };
   }
@@ -1389,18 +1424,18 @@
    * @param {!Function} callback
    * @return {?}
    */
-  function update(data, callback) {
+  function render(data, callback) {
     /** @type {!Array} */
     var html = ["img", "script", "iframe", "link", "audio", "video", "source"];
-    var resolve = (data = done(log(data, function(mutations) {
+    var createElement = (data = done(log(data, function(mutations) {
       /** @type {number} */
       var i = 0;
       for (; i < mutations.length; i++) {
-        if ("childList" === mutations[i].type && function add(children, url) {
+        if ("childList" === mutations[i].type && function process(result, lang) {
           /** @type {number} */
           var i = 0;
-          for (; i < children.length; i++) {
-            if (resolve(url, children[i].nodeName.toLowerCase()) || children[i].children && add(children[i].children, url)) {
+          for (; i < result.length; i++) {
+            if (resolve(lang, result[i].nodeName.toLowerCase()) || result[i].children && process(result[i].children, lang)) {
               return 1;
             }
           }
@@ -1410,7 +1445,7 @@
       }
     }), 2))[0];
     return [function() {
-      return resolve(document, {
+      return createElement(document, {
         attributes : true,
         childList : true,
         subtree : true,
@@ -1419,7 +1454,7 @@
     }, data[1]];
   }
   /**
-   * @param {!Object} now
+   * @param {number} now
    * @return {?}
    */
   function calculateBars(now) {
@@ -1428,63 +1463,63 @@
     return now ? now - (void 0 === last ? 0 : last) : null;
   }
   /**
-   * @param {!Function} render
+   * @param {!Function} callback
    * @return {?}
    */
-  function step(render) {
+  function h(callback) {
     return function() {
       /** @type {!Array} */
-      var args = [];
+      var argumentsArray = [];
       /** @type {number} */
       var i = 0;
       for (; i < arguments.length; i++) {
-        args[i] = arguments[i];
+        argumentsArray[i] = arguments[i];
       }
-      return this._method = args[0], render.apply(this, args);
+      return this._method = argumentsArray[0], callback.apply(this, argumentsArray);
     };
   }
   /**
-   * @param {!Function} fn
-   * @param {?} bubble
+   * @param {!Function} animate
    * @param {?} callback
+   * @param {?} page
    * @return {?}
    */
-  function addEvent(fn, bubble, callback) {
+  function show(animate, callback, page) {
     /** @type {number} */
-    var verifyProducts = 0;
+    var value = 0;
     return function() {
       /** @type {!Array} */
-      var specialized = [];
+      var element = [];
       /** @type {number} */
       var i = 0;
       for (; i < arguments.length; i++) {
-        specialized[i] = arguments[i];
+        element[i] = arguments[i];
       }
       if ("GET" !== this._method) {
-        return fn.apply(this, specialized);
+        return animate.apply(this, element);
       }
-      var storeProducts = verifyProducts = verifyProducts + 2;
-      return bubble(storeProducts, Date.now()), request(this, "onreadystatechange", function(compare) {
+      var next = value = value + 2;
+      return callback(next, Date.now()), map(this, "onreadystatechange", function(compare) {
         return function(otherCards) {
           if (compare) {
             compare.call(this, otherCards);
           }
           if (4 === this.readyState) {
-            callback(storeProducts);
+            page(next);
           }
         };
-      })(), fn.apply(this, specialized);
+      })(), animate.apply(this, element);
     };
   }
   /**
    * @param {!Function} _
-   * @param {?} t
+   * @param {?} c
    * @param {?} f
    * @return {?}
    */
-  function all(_, t, f) {
+  function write(_, c, f) {
     /** @type {number} */
-    var b = 1;
+    var g = 1;
     return function() {
       var iface;
       /** @type {!Array} */
@@ -1495,27 +1530,27 @@
         obj[i] = arguments[i];
       }
       return "GET" !== ((null === (iface = obj[0]) || void 0 === iface ? void 0 : iface.method) || (null === (iface = obj[1]) || void 0 === iface ? void 0 : iface.method) || "GET") ? _.apply(void 0, fn([], done(obj), false)) : new Promise(function(saveNotifs, addListenerOrObserver) {
-        var a = b = b + 2;
-        t(a, Date.now());
+        var r = g = g + 2;
+        c(r, Date.now());
         _.apply(void 0, fn([], done(obj), false)).then(function(notifications) {
-          f(a);
+          f(r);
           saveNotifs(notifications);
         }, function(proto) {
-          f(a, proto);
+          f(r, proto);
           addListenerOrObserver(proto);
         });
       });
     };
   }
   /**
-   * @param {number} key
-   * @param {number} index
-   * @param {?} values
-   * @param {?} value
+   * @param {number} result
+   * @param {number} value
+   * @param {?} input
+   * @param {?} data
    * @return {?}
    */
-  function send(key, index, values, value) {
-    return function(header, saveNotifs, wrongCredsCallback) {
+  function report(result, value, input, data) {
+    return function(events, saveNotifs, wrongCredsCallback) {
       /**
        * @return {?}
        */
@@ -1570,17 +1605,17 @@
             }
           }
           return destination;
-        }(callback), caller_line, wrongCredsCallback);
+        }(callback), res, wrongCredsCallback);
       }
       var returnNodes;
       var identifierPositions;
-      var r;
-      var v;
+      var parent;
+      var el;
       var comboHashes;
-      var html;
-      var updateDevicesAfterDelay;
-      var msg;
-      var l = done([returnNodes = [], identifierPositions = [], function(allDoneCb, continuation_proxy) {
+      var hit;
+      var next;
+      var ret;
+      var state = done([returnNodes = [], identifierPositions = [], function(allDoneCb, continuation_proxy) {
         return function(result) {
           var index = result.startTime;
           var length = result.duration;
@@ -1607,46 +1642,46 @@
           }
         };
       }], 3);
-      var zoom = l[0];
-      var caller_line = l[1];
-      var next = l[2];
-      var cb = done((r = key, v = index, cb = done([comboHashes = {}, function(hashId, combo) {
+      var cssPropState = state[0];
+      var res = state[1];
+      var dispatch = state[2];
+      var cb = done((parent = result, el = value, cb = done([comboHashes = {}, function(hashId, combo) {
         return comboHashes[hashId] = combo;
       }, function(hashId) {
         return delete comboHashes[hashId];
-      }], 3), timer = cb[0], l = cb[1], cb = cb[2], html = v && request(v.prototype, "open", step)(), updateDevicesAfterDelay = v && request(v.prototype, "send", addEvent)(l, cb), msg = r && request(r, "fetch", all)(l, cb), [timer, function() {
-        if (html) {
-          html(true);
+      }], 3), timer = cb[0], state = cb[1], cb = cb[2], hit = el && map(el.prototype, "open", h)(), next = el && map(el.prototype, "send", show)(state, cb), ret = parent && map(parent, "fetch", write)(state, cb), [timer, function() {
+        if (hit) {
+          hit(true);
         }
-        if (updateDevicesAfterDelay) {
-          updateDevicesAfterDelay(true);
+        if (next) {
+          next(true);
         }
-        if (msg) {
-          msg(true);
+        if (ret) {
+          ret(true);
         }
       }]), 2);
       var callback = cb[0];
       var b = cb[1];
-      var timer = done(value && update(value, function() {
-        return saveNotifs(wrongCredsCallback() + 5E3);
+      var timer = done(data && render(data, function() {
+        return saveNotifs(wrongCredsCallback() + 5e3);
       }) || [], 2);
       cb = timer[0];
       var initSortMenu = timer[1];
       if (cb) {
         cb();
       }
-      timer = done(push(values, next(function(o) {
+      timer = done(forEach(input, dispatch(function(o) {
         var s = o.startTime;
         o = o.duration;
-        return saveNotifs(s + o + 5E3);
+        return saveNotifs(s + o + 5e3);
       }, function() {
-        return saveNotifs(get() + 5E3);
+        return saveNotifs(get() + 5e3);
       }), false, function() {
-        return zoom.notSupport = true;
+        return cssPropState.notSupport = true;
       }), 2);
       cb = timer[0];
       var handleTimeoutPacket = timer[1];
-      return cb("longtask", "resource"), header.forEach(next()), [zoom, function() {
+      return cb("longtask", "resource"), events.forEach(dispatch()), [cssPropState, function() {
         b();
         handleTimeoutPacket();
         if (initSortMenu) {
@@ -1670,7 +1705,7 @@
     if ((value = [].slice.call(void 0 === value ? [] : value).reduceRight(function(object, value) {
       return object + position(value, zIndex + 1, 0 < object, width);
     }, 0)) <= 0 && !size) {
-      if (!isArray(h.getBoundingClientRect)) {
+      if (!isFunction(h.getBoundingClientRect)) {
         return 0;
       }
       size = h.getBoundingClientRect() || {};
@@ -1680,28 +1715,28 @@
         return 0;
       }
     }
-    return value + 1 + .5 * zIndex;
+    return value + 1 + 0.5 * zIndex;
   }
   /**
    * @param {!Object} window
    * @param {!Object} document
-   * @param {!Array} name
+   * @param {!Array} data
    * @param {!Array} query
-   * @param {!Array} error
+   * @param {!Array} result
    * @return {?}
    */
-  function run(window, document, name, query, error) {
-    if (void 0 === window && (window = apply()), void 0 === document && (document = join()), void 0 === name && (name = map()), void 0 === query && (query = compile()), void 0 === error && (error = debug()), document && window) {
-      return function(options, dispatch) {
+  function close(window, document, data, query, result) {
+    if (void 0 === window && (window = apply()), void 0 === document && (document = join()), void 0 === data && (data = clone()), void 0 === query && (query = def()), void 0 === result && (result = match()), document && window) {
+      return function(options, resolve) {
         /**
          * @return {undefined}
          */
-        function success() {
+        function quit() {
           if (_takingTooLongTimeout) {
             clearTimeout(_takingTooLongTimeout);
           }
           _takingTooLongTimeout = window.setTimeout(function() {
-            res(function() {
+            callback(function() {
               window.requestAnimationFrame(function() {
                 var value = key ? document.querySelector(key) : document.body;
                 if (value) {
@@ -1715,52 +1750,52 @@
                 }
               });
             });
-          }, 1E3);
+          }, 1e3);
         }
         var e;
         var response;
         var _takingTooLongTimeout;
-        var handleAuthorizedState;
+        var check;
         var u;
         var beatTime;
         var width = options.threshold;
         var thumbnail = options.screenshot;
         var key = options.rootSelector;
         var readOnlyFn = options.autoDetect;
-        var className = options.ssUrl;
-        var res = schedule(window);
-        var depthOfPath = done(test(error), 2)[1];
+        var res = options.ssUrl;
+        var callback = addListener(window);
+        var depthOfPath = done(next(result), 2)[1];
         /** @type {number} */
         var now = 0;
         /** @type {boolean} */
         var isRoot = false;
         /**
-         * @param {!Blob} data
+         * @param {!Blob} result
          * @return {undefined}
          */
-        var callback = function(data) {
-          if (e && dispatch) {
-            dispatch({
+        var wait = function(result) {
+          if (e && resolve) {
+            resolve({
               ev_type : "blank_screen",
               payload : {
                 timestamp : e[0],
                 score : e[1],
-                screenshot : data,
+                screenshot : result,
                 error : response
               }
             });
           }
         };
         /** @type {function(): undefined} */
-        var gotoNewOfflinePage = (handleAuthorizedState = function() {
+        var gotoNewOfflinePage = (check = function() {
           if (e && !isRoot) {
             /** @type {boolean} */
             isRoot = true;
-            go();
+            cleanup();
             if (thumbnail) {
-              cleanup(callback, className, window, document);
+              cb(wait, res, window, document);
             } else {
-              callback();
+              wait();
             }
           }
         }, function() {
@@ -1771,20 +1806,20 @@
               /** @type {number} */
               u = 0;
               if (!(beatTime < now)) {
-                handleAuthorizedState();
+                check();
               }
             }, depthOfPath() > maxDepth ? timeout : HOVER_DELAY);
           }
         });
-        addEventListener(function() {
+        on(function() {
           if (!isRoot) {
-            callback();
+            wait();
           }
         });
         /**
          * @return {undefined}
          */
-        var go = function() {
+        var cleanup = function() {
           clearTimeout(_takingTooLongTimeout);
           if (f) {
             f();
@@ -1793,18 +1828,18 @@
             originalSuccess();
           }
         };
-        var handler = done(log(query, success), 2);
+        var handler = done(log(query, quit), 2);
         var func = handler[0];
         var f = handler[1];
-        options = done(push(name, function(n, canCreateDiscussions, inRevIdx) {
-          return _takingTooLongTimeout && 1 < inRevIdx.length && success();
+        options = done(forEach(data, function(n, canCreateDiscussions, inRevIdx) {
+          return _takingTooLongTimeout && 1 < inRevIdx.length && quit();
         }), 2);
         handler = options[0];
         var originalSuccess = options[1];
         return readOnlyFn && (func(null === (func = join()) || void 0 === func ? void 0 : func.body, {
           subtree : true,
           childList : true
-        }), handler("longtask", "resource"), success()), [go, function(key) {
+        }), handler("longtask", "resource"), quit()), [cleanup, function(key) {
           if (!isRoot) {
             /** @type {number} */
             now = Date.now();
@@ -1813,25 +1848,25 @@
             }
             response = makeRequest(response, key);
           }
-        }, success];
+        }, quit];
       };
     }
   }
   /**
-   * @param {!Object} response
+   * @param {!Object} callback
    * @return {undefined}
    */
-  function read(response) {
+  function execute(callback) {
     var self;
     var value;
-    value = args;
-    (self = response).on("init", function() {
+    value = values;
+    (self = callback).on("init", function() {
       var func;
       var fn;
       var callback;
-      var cb = wrap(self, zoom, value);
+      var cb = wrap(self, type, value);
       if (cb) {
-        cb = done(setTimeout(run, cb, self.report.bind(self)), 3);
+        cb = done(require(close, cb, self.report.bind(self)), 3);
         func = cb[0];
         fn = cb[1];
         cb = cb[2];
@@ -1847,36 +1882,36 @@
     });
   }
   /**
-   * @param {!Object} ident
+   * @param {!Object} elem
    * @return {?}
    */
-  function getIndex(ident) {
-    return (null == ident ? void 0 : ident.effectiveType) || (null == ident ? void 0 : ident.type) || "";
+  function appendChild(elem) {
+    return (null == elem ? void 0 : elem.effectiveType) || (null == elem ? void 0 : elem.type) || "";
   }
   /**
-   * @param {!Object} config
-   * @param {number} val
+   * @param {!Object} options
+   * @param {number} f
    * @return {?}
    */
-  function append(config, val) {
-    var state = config.common || {};
-    return state.sample_rate = val, config.common = state, config;
+  function setTimeout(options, f) {
+    var d = options.common || {};
+    return d.sample_rate = f, options.common = d, options;
   }
   /**
-   * @param {boolean} value
+   * @param {boolean} s
    * @param {?} i
-   * @param {!Function} fn
-   * @param {number} a
    * @param {!Function} func
+   * @param {number} arg
+   * @param {!Function} callback
    * @return {?}
    */
-  function set(value, i, fn, a, func) {
-    return value ? (d = func(a, i), function() {
-      return d;
+  function exec(s, i, func, arg, callback) {
+    return s ? (result = callback(arg, i), function() {
+      return result;
     }) : function() {
-      return fn(i);
+      return func(i);
     };
-    var d;
+    var result;
   }
   /**
    * @param {boolean} props
@@ -1894,24 +1929,24 @@
     var type;
     /** @type {string} */
     value = "boolean" == typeof props ? "bool" : isFinite(props) ? "number" : "string";
-    return function(val, match, operator) {
+    return function(x, r, operator) {
       switch(operator) {
         case "eq":
-          return resolve(match, val);
+          return resolve(r, x);
         case "neq":
-          return !resolve(match, val);
+          return !resolve(r, x);
         case "gt":
-          return val > match[0];
+          return x > r[0];
         case "gte":
-          return val >= match[0];
+          return x >= r[0];
         case "lt":
-          return val < match[0];
+          return x < r[0];
         case "lte":
-          return val <= match[0];
+          return x <= r[0];
         case "regex":
-          return Boolean(val.match(new RegExp(match.join("|"))));
+          return Boolean(x.match(new RegExp(r.join("|"))));
         case "not_regex":
-          return !val.match(new RegExp(match.join("|")));
+          return !x.match(new RegExp(r.join("|")));
         default:
           return false;
       }
@@ -1928,18 +1963,18 @@
   }
   /**
    * @param {!Object} name
-   * @param {!Object} value
+   * @param {!Object} options
    * @return {?}
    */
-  function check(name, value) {
+  function filter(name, options) {
     try {
-      return "rule" === value.type ? format(name, value.field, value.op, value.values) : "and" === value.type ? value.children.every(function(JohnDoe) {
-        return check(name, JohnDoe);
-      }) : value.children.some(function(JohnDoe) {
-        return check(name, JohnDoe);
+      return "rule" === options.type ? format(name, options.field, options.op, options.values) : "and" === options.type ? options.children.every(function(Standard) {
+        return filter(name, Standard);
+      }) : options.children.some(function(Standard) {
+        return filter(name, Standard);
       });
-    } catch (formOrder) {
-      return each(formOrder), false;
+    } catch (delayFn) {
+      return expect(delayFn), false;
     }
   }
   /**
@@ -1954,19 +1989,19 @@
         window.navigator.sendBeacon(url, data);
       }
     } : {
-      get : b,
-      post : b
+      get : undefined,
+      post : undefined
     };
   }
   /**
-   * @param {!Object} c
+   * @param {!Object} options
    * @return {?}
    */
-  function init(c) {
+  function send(options) {
     /**
      * @return {undefined}
      */
-    function b() {
+    function onLoadComplete() {
       if (d.length) {
         transport.post({
           url : endpoint,
@@ -1977,11 +2012,11 @@
       }
     }
     /**
-     * @param {!Object} data
+     * @param {!Object} type
      * @return {undefined}
      */
-    function send(data) {
-      $http.post(Q.getEndpoint(), clean([data]));
+    function send(type) {
+      $http.post(Q.getEndpoint(), clean([type]));
     }
     var wait;
     var transport;
@@ -1991,7 +2026,7 @@
     var _SERVICE_TAKING_TOO_LONG;
     var d;
     var _takingTooLongTimeout;
-    var Q = (transport = (wait = c).transport, endpoint = c.endpoint, value = c.size, val = void 0 === value ? 10 : value, _SERVICE_TAKING_TOO_LONG = void 0 === (wait = c.wait) ? 1E3 : wait, d = [], _takingTooLongTimeout = 0, {
+    var Q = (transport = (wait = options).transport, endpoint = options.endpoint, value = options.size, val = void 0 === value ? 10 : value, _SERVICE_TAKING_TOO_LONG = void 0 === (wait = options.wait) ? 1e3 : wait, d = [], _takingTooLongTimeout = 0, {
       getSize : function() {
         return val;
       },
@@ -2010,21 +2045,20 @@
         return endpoint;
       },
       setEndpoint : function(url) {
-        /** @type {string} */
         endpoint = url;
       },
-      send : function(data) {
-        d.push(data);
+      send : function(obj) {
+        d.push(obj);
         if (d.length >= val) {
-          b.call(this);
+          onLoadComplete.call(this);
         }
         clearTimeout(_takingTooLongTimeout);
         /** @type {number} */
-        _takingTooLongTimeout = setTimeout(b.bind(this), _SERVICE_TAKING_TOO_LONG);
+        _takingTooLongTimeout = setTimeout(onLoadComplete.bind(this), _SERVICE_TAKING_TOO_LONG);
       },
       flush : function() {
         clearTimeout(_takingTooLongTimeout);
-        b.call(this);
+        onLoadComplete.call(this);
       },
       getBatchData : function() {
         return d.length ? clean(d) : "";
@@ -2036,7 +2070,7 @@
       }
     });
     var $http = configure();
-    return addEventListener(function() {
+    return on(function() {
       var cardData = Q.getBatchData();
       if (cardData) {
         $http.post(Q.getEndpoint(), cardData);
@@ -2107,8 +2141,8 @@
         return;
       }
     }(handleSmallerThan100(n)) || {
-      userId : template(),
-      deviceId : template(),
+      userId : mobileLogin(),
+      deviceId : mobileLogin(),
       r : Math.random()
     };
   }
@@ -2135,20 +2169,20 @@
     });
   }
   /**
-   * @param {!Object} options
    * @param {!Object} context
+   * @param {!Object} params
    * @return {?}
    */
-  function find(options, context) {
-    if (!options || !context) {
-      return options || context;
+  function add(context, params) {
+    if (!context || !params) {
+      return context || params;
     }
-    var res = extend(extend({}, options), context);
-    return res.include_users = fn(fn([], done(options.include_users || []), false), done(context.include_users || []), false), res.rules = fn(fn([], done(Object.keys(options.rules || {})), false), done(Object.keys(context.rules || {})), false).reduce(function(deps, name) {
+    var env = extend(extend({}, context), params);
+    return env.include_users = fn(fn([], done(context.include_users || []), false), done(params.include_users || []), false), env.rules = fn(fn([], done(Object.keys(context.rules || {})), false), done(Object.keys(params.rules || {})), false).reduce(function(to, key) {
       var rules;
-      return name in deps || (name in (options.rules || {}) && name in (context.rules || {}) ? (deps[name] = extend(extend({}, options.rules[name]), context.rules[name]), deps[name].conditional_sample_rules = fn(fn([], done(options.rules[name].conditional_sample_rules || []), false), done(context.rules[name].conditional_sample_rules || []), false)) : deps[name] = (null === (rules = options.rules) || void 0 === rules ? void 0 : rules[name]) || (null === (rules = context.rules) || void 0 === rules ?
-      void 0 : rules[name])), deps;
-    }, {}), res;
+      return key in to || (key in (context.rules || {}) && key in (params.rules || {}) ? (to[key] = extend(extend({}, context.rules[key]), params.rules[key]), to[key].conditional_sample_rules = fn(fn([], done(context.rules[key].conditional_sample_rules || []), false), done(params.rules[key].conditional_sample_rules || []), false)) : to[key] = (null === (rules = context.rules) || void 0 === rules ? void 0 : rules[key]) || (null === (rules = params.rules) || void 0 === rules ? void 0 : rules[key])),
+      to;
+    }, {}), env;
   }
   var doc;
   var eventListeners;
@@ -2220,15 +2254,15 @@
     eventListeners = [];
     /**
      * @param {string} type
-     * @param {!Function} listener
+     * @param {!Function} fn
      * @return {undefined}
      */
-    removeEventListenerFn = function(type, listener) {
+    remove = function(type, fn) {
       /** @type {number} */
       var i = 0;
       for (; i < eventListeners.length;) {
         var eventListener = eventListeners[i];
-        if (eventListener.object === this && eventListener.type === type && eventListener.listener === listener) {
+        if (eventListener.object === this && eventListener.type === type && eventListener.listener === fn) {
           if ("DOMContentLoaded" === type) {
             this.detachEvent("onreadystatechange", eventListener.wrapper);
           } else {
@@ -2291,18 +2325,18 @@
       }
     };
     /** @type {function(string, !Function): undefined} */
-    Element.prototype.removeEventListener = removeEventListenerFn;
+    Element.prototype.removeEventListener = remove;
     if (HTMLDocument && !HTMLDocument.prototype.addEventListener) {
       /** @type {function(string, !Function): undefined} */
       HTMLDocument.prototype.addEventListener = addEventListenerFn;
       /** @type {function(string, !Function): undefined} */
-      HTMLDocument.prototype.removeEventListener = removeEventListenerFn;
+      HTMLDocument.prototype.removeEventListener = remove;
     }
     if (Window && !Window.prototype.addEventListener) {
       /** @type {function(string, !Function): undefined} */
       Window.prototype.addEventListener = addEventListenerFn;
       /** @type {function(string, !Function): undefined} */
-      Window.prototype.removeEventListener = removeEventListenerFn;
+      Window.prototype.removeEventListener = remove;
     }
   }
   /** @type {!Array} */
@@ -2310,7 +2344,7 @@
   /**
    * @return {undefined}
    */
-  var b = function() {
+  var undefined = function() {
   };
   var _ = Object.prototype;
   /** @type {number} */
@@ -2318,61 +2352,61 @@
   /**
    * @return {undefined}
    */
-  var _process = function() {
+  var inspect = function() {
     /** @type {!Array} */
-    var buffer = [];
+    var list = [];
     /** @type {number} */
     var i = 0;
     for (; i < arguments.length; i++) {
-      buffer[i] = arguments[i];
+      list[i] = arguments[i];
     }
-    console.error.apply(console, fn(["[SDK]", Date.now(), ("" + _clientIdCounter++).padStart(8, " ")], done(buffer), false));
+    console.error.apply(console, fn(["[SDK]", Date.now(), ("" + _clientIdCounter++).padStart(8, " ")], done(list), false));
   };
   /** @type {number} */
   var nextGuid = 0;
   /**
-   * @param {?} upper
+   * @param {?} part
    * @return {?}
    */
-  var range = function(upper) {
-    return Math.random() < Number(upper);
+  var id = function(part) {
+    return Math.random() < Number(part);
   };
   /**
    * @param {?} i
-   * @param {?} n
+   * @param {?} level
    * @return {?}
    */
-  var name = function(i, n) {
-    return i < Number(n);
+  var step = function(i, level) {
+    return i < Number(level);
   };
   /**
    * @param {!Object} _
    * @return {undefined}
    */
   var factory = function(_) {
-    var o;
-    var r;
+    var data;
+    var obj;
     var me;
-    var plugins = (o = {}, r = {}, me = {
-      set : function(k, v) {
-        return o[k] = v, r[k] = parseInt(v), me;
+    var plugins = (data = {}, obj = {}, me = {
+      set : function(prop, val) {
+        return data[prop] = val, obj[prop] = stringify(val), me;
       },
-      merge : function(a) {
-        return o = extend(extend({}, o), a), Object.keys(a).forEach(function(dim) {
-          r[dim] = parseInt(a[dim]);
+      merge : function(source) {
+        return data = extend(extend({}, data), source), Object.keys(source).forEach(function(key) {
+          obj[key] = stringify(source[key]);
         }), me;
       },
-      delete : function(entity) {
-        return delete o[entity], delete r[entity], me;
+      delete : function(setName) {
+        return delete data[setName], delete obj[setName], me;
       },
       clear : function() {
-        return o = {}, r = {}, me;
+        return data = {}, obj = {}, me;
       },
-      get : function(code) {
-        return r[code];
+      get : function(i) {
+        return obj[i];
       },
       toString : function() {
-        return extend({}, r);
+        return extend({}, obj);
       }
     });
     _.provide("context", plugins);
@@ -2386,7 +2420,7 @@
    * @param {string} t
    * @return {?}
    */
-  var remove = function(obj, i, t) {
+  var set = function(obj, i, t) {
     /**
      * @return {?}
      */
@@ -2402,10 +2436,10 @@
       if (d) {
         var name = d.split(".")[0];
         if (name in f) {
-          return result = f, n = d, lines = [].slice.call(list, 1), v(result, n, function(options, name) {
-            if (options && name in options && isArray(options[name])) {
+          return result = f, n = d, lines = [].slice.call(list, 1), v(result, n, function(obj, prop) {
+            if (obj && prop in obj && isFunction(obj[prop])) {
               try {
-                return options[name].apply(options, lines);
+                return obj[prop].apply(obj, lines);
               } catch (n) {
                 return;
               }
@@ -2421,7 +2455,7 @@
     }
     var key;
     var root = {};
-    for (key in request(obj, "provide", function(fn) {
+    for (key in map(obj, "provide", function(fn) {
       return function(i, elem) {
         f[i] = elem;
         fn.call(obj, i, elem);
@@ -2433,12 +2467,12 @@
     }
     return obj.on("provide", function(component) {
       if (root[component]) {
-        root[component].forEach(function(body) {
-          var result = done(body);
-          body = result[0];
-          result = result.slice(1);
+        root[component].forEach(function(context) {
+          var path = done(context);
+          context = path[0];
+          path = path.slice(1);
           if (null != t) {
-            t(obj, body, result);
+            t(obj, context, path);
           }
         });
         /** @type {null} */
@@ -2449,7 +2483,7 @@
   /**
    * @return {undefined}
    */
-  var each = function() {
+  var expect = function() {
     /** @type {!Array} */
     var newItems = [];
     /** @type {number} */
@@ -2476,61 +2510,61 @@
     }
   };
   /**
-   * @param {!Object} item
-   * @param {string} event
+   * @param {!Object} type
+   * @param {string} text
    * @return {?}
    */
-  var log = function(item, event) {
-    var config = item && new item(event);
-    return [function(content, done) {
-      if (config && content) {
-        config.observe(content, done);
+  var log = function(type, text) {
+    var p = type && new type(text);
+    return [function(c, f) {
+      if (p && c) {
+        p.observe(c, f);
       }
     }, function() {
-      return config && config.disconnect();
+      return p && p.disconnect();
     }];
   };
   /**
-   * @param {!Object} options
+   * @param {!Object} data
    * @return {?}
    */
-  var test = function(options) {
-    var ti = options && options.timing || void 0;
+  var next = function(data) {
+    var ti = data && data.timing || void 0;
     return [ti, function() {
-      return options && options.now ? options.now() : (Date.now ? Date.now() : +new Date) - (ti && ti.navigationStart || 0);
-    }, function(comparator) {
-      var model = (options || {}).getEntriesByType;
-      return isArray(model) && model.call(options, comparator) || [];
+      return data && data.now ? data.now() : (Date.now ? Date.now() : +new Date) - (ti && ti.navigationStart || 0);
+    }, function(obj) {
+      var c = (data || {}).getEntriesByType;
+      return isFunction(c) && c.call(data, obj) || [];
     }, function() {
-      var fn = (options || {}).clearResourceTimings;
-      if (isArray(fn)) {
-        fn.call(options);
+      var requester = (data || {}).clearResourceTimings;
+      if (isFunction(requester)) {
+        requester.call(data);
       }
-    }, function(comparator) {
-      var model = (options || {}).getEntriesByName;
-      return isArray(model) && model.call(options, comparator) || [];
+    }, function(obj) {
+      var c = (data || {}).getEntriesByName;
+      return isFunction(c) && c.call(data, obj) || [];
     }];
   };
   /**
-   * @param {!Object} value
-   * @param {!Function} o
-   * @param {boolean} name
-   * @param {!Function} handler
+   * @param {!Object} scope
+   * @param {!Function} callback
+   * @param {boolean} index
+   * @param {!Function} fn
    * @return {?}
    */
-  var push = function(value, o, name, handler) {
-    var observer = value && new value(function(prop, a) {
+  var forEach = function(scope, callback, index, fn) {
+    var observer = scope && new scope(function(prop, t) {
       if (prop.getEntries) {
-        prop.getEntries().forEach(function(n, context, data) {
-          return o(n, context, data, a);
+        prop.getEntries().forEach(function(identifierPositions, exisObj, gmInstance) {
+          return callback(identifierPositions, exisObj, gmInstance, t);
         });
       } else {
-        if (handler) {
-          handler();
+        if (fn) {
+          fn();
         }
       }
-      if (name) {
-        a.disconnect();
+      if (index) {
+        t.disconnect();
       }
     });
     return [function() {
@@ -2541,12 +2575,12 @@
       for (; i < arguments.length; i++) {
         testModules[i] = arguments[i];
       }
-      if (!value || !observer) {
-        return handler && handler();
+      if (!scope || !observer) {
+        return fn && fn();
       }
       try {
         testModules.forEach(function(n) {
-          if (-1 < value.supportedEntryTypes.indexOf(n)) {
+          if (-1 < scope.supportedEntryTypes.indexOf(n)) {
             observer.observe({
               type : n,
               buffered : false
@@ -2559,7 +2593,7 @@
             entryTypes : testModules
           });
         } catch (n) {
-          return handler && handler();
+          return fn && fn();
         }
       }
     }, function() {
@@ -2567,73 +2601,73 @@
     }];
   };
   /**
-   * @param {!Function} callback
+   * @param {!Function} type
    * @param {number} name
-   * @param {!Function} cb
-   * @param {!Array} res
+   * @param {!Function} url
+   * @param {!Array} id
    * @return {?}
    */
-  var setTimeout = function(callback, name, cb, res) {
+  var require = function(type, name, url, id) {
     if (void 0 === name) {
       name = {};
     }
-    if (void 0 === res) {
+    if (void 0 === id) {
       /** @type {!Array} */
-      res = [];
+      id = [];
     }
     try {
-      var handler = callback.apply(void 0, fn([], done(res), false));
-      return handler && handler(name, cb) || [];
-    } catch (formOrder) {
-      return each(formOrder), [];
+      var init = type.apply(void 0, fn([], done(id), false));
+      return init && init(name, url) || [];
+    } catch (delayFn) {
+      return expect(delayFn), [];
     }
   };
   /**
-   * @param {!Object} issue
+   * @param {!Object} options
    * @return {?}
    */
-  var f = function(issue) {
+  var end = function(options) {
     var params = {
-      url : toJSON(),
+      url : emit(),
       timestamp : Date.now()
     };
-    var val = issue.config();
-    return null != val && val.pid && (params.pid = val.pid), null != issue && issue.context && (params.context = issue.context.toString()), params;
+    var val = options.config();
+    return null != val && val.pid && (params.pid = val.pid), null != options && options.context && (params.context = options.context.toString()), params;
   };
   /**
    * @param {!Object} t
-   * @param {!Function} value
+   * @param {!Object} type
    * @return {?}
    */
-  var forEach = function(t, value) {
-    return function(callbackFn) {
+  var func = function(t, type) {
+    return function(refreshFunc) {
       /**
-       * @param {!Object} result
+       * @param {!Object} array
        * @return {?}
        */
-      function next(result) {
-        return result.overrides = value, result;
+      function method(array) {
+        return array.overrides = type, array;
       }
-      t.on("report", next);
-      callbackFn();
-      t.off("report", next);
+      t.on("report", method);
+      refreshFunc();
+      t.off("report", method);
     };
   };
   /** @type {string} */
-  var auto = "<unknown>";
+  var value = "<unknown>";
   /**
-   * @param {!Function} func
+   * @param {!Function} fn
    * @return {?}
    */
-  var call = function(func) {
+  var push = function(fn) {
     /** @type {boolean} */
     var t = false;
-    return [function(ldata) {
+    return [function(responce) {
       if (!t) {
         /** @type {boolean} */
         t = true;
-        if (func) {
-          func(ldata);
+        if (fn) {
+          fn(responce);
         }
       }
     }];
@@ -2642,8 +2676,8 @@
    * @param {!Function} name
    * @return {undefined}
    */
-  var addEventListener = function(name) {
-    var onclickEdition = done(call(name), 1)[0];
+  var on = function(name) {
+    var onclickEdition = done(push(name), 1)[0];
     ["unload", "beforeunload", "pagehide"].forEach(function(type) {
       addEventListener(type, onclickEdition);
     });
@@ -2653,77 +2687,77 @@
   /** @type {!RegExp} */
   var inlineAttributeIgnoreCommentRegex = new RegExp("(bearer|session)", "i");
   /**
-   * @param {!Array} load
-   * @param {!Array} error
+   * @param {!Array} actual
+   * @param {!Array} id
    * @return {?}
    */
-  var open = function(load, error) {
-    if (void 0 === load && (load = encode() && apply()), void 0 === error && (error = debug()), load) {
-      var action = ok(error);
-      return function(a, index) {
-        var registration1;
-        if (!!a.autoWrap) {
-          if (registration1 = XMLHttpRequest && XMLHttpRequest.prototype) {
-            exec(registration1, a, index, action);
+  var result = function(actual, id) {
+    if (void 0 === actual && (actual = check() && apply()), void 0 === id && (id = match()), actual) {
+      var ns = f(id);
+      return function(s2, undefined) {
+        var focusApp;
+        if (!!s2.autoWrap) {
+          if (focusApp = XMLHttpRequest && XMLHttpRequest.prototype) {
+            equal(focusApp, s2, undefined, ns);
           }
         }
-        return [function(n, k, value) {
+        return [function(time, b, value) {
           /**
            * @return {?}
            */
-          function l() {
-            var e = new r;
-            return exec(e, b, title, callback), e;
+          function sub_arr() {
+            var n = new timeArray;
+            return equal(n, a, key, query), n;
           }
-          return b = k = void 0 === k ? a : k, title = value = void 0 === value ? index : value, callback = action, l.prototype = new (r = n), ["DONE", "HEADERS_RECIEVED", "LOADING", "OPENED", "UNSENT"].forEach(function(n) {
-            l[n] = r[n];
-          }), l;
-          var r;
-          var b;
-          var title;
-          var callback;
+          return a = b = void 0 === b ? s2 : b, key = value = void 0 === value ? undefined : value, query = ns, sub_arr.prototype = new (timeArray = time), ["DONE", "HEADERS_RECIEVED", "LOADING", "OPENED", "UNSENT"].forEach(function(n) {
+            sub_arr[n] = timeArray[n];
+          }), sub_arr;
+          var timeArray;
+          var a;
+          var key;
+          var query;
         }];
       };
     }
   };
   /**
-   * @param {!Object} result
-   * @param {string} cb
+   * @param {!Object} e
+   * @param {string} callback
    * @return {?}
    */
-  var process = function(result, cb) {
-    var app = result.config();
+  var onRelease = function(e, callback) {
+    var app = e.config();
     var data = {
-      url : toJSON(),
+      url : emit(),
       pid : app.pid,
       view_id : app.viewId
     };
     return function(context) {
-      result.report(extend(extend({}, context), {
-        overrides : extend(extend({}, data), cb && cb(context) || {})
+      e.report(extend(extend({}, context), {
+        overrides : extend(extend({}, data), callback && callback(context) || {})
       }));
     };
   };
   /** @type {string} */
-  var path = "ajax";
-  var j = {
+  var addVScroll = "ajax";
+  var instance = {
     autoWrap : true,
-    hookCbAtReq : string,
+    hookCbAtReq : noop,
     ignoreUrls : [],
     collectBodyOnError : false
   };
   /**
-   * @param {!Object} connection
+   * @param {!Object} object
    * @return {?}
    */
-  var stop = function(connection) {
+  var stop = function(object) {
     return function(typed) {
       if (!typed) {
         return typed;
       }
-      var app = connection.config();
+      var app = object.config();
       var data = {
-        url : toJSON(),
+        url : emit(),
         pid : app.pid,
         view_id : app.viewId
       };
@@ -2742,23 +2776,23 @@
    */
   var start = function(list) {
     if (list = void 0 === list ? join() : list) {
-      return function(a, canCreateDiscussions) {
+      return function(header, canCreateDiscussions) {
         var callback;
-        var data = a.maxBreadcrumbs;
-        var u = a.onAddBreadcrumb;
-        var trans = a.onMaxBreadcrumbs;
-        var foo = a.dom;
-        var next = done(error(100), 2);
-        a = next[0];
-        next = next[1];
-        data = done(function(index, action, transform) {
+        var name = header.maxBreadcrumbs;
+        var value = header.onAddBreadcrumb;
+        var id = header.onMaxBreadcrumbs;
+        var headerEl = header.dom;
+        var get = done(pipe(100), 2);
+        header = get[0];
+        get = get[1];
+        name = done(function(index, defaultValue, transform) {
           if (void 0 === index) {
             /** @type {number} */
             index = 20;
           }
-          if (void 0 === action) {
+          if (void 0 === defaultValue) {
             /** @type {function(!Object): ?} */
-            action = string;
+            defaultValue = noop;
           }
           if (void 0 === transform) {
             /**
@@ -2771,25 +2805,25 @@
             };
           }
           /** @type {!Array} */
-          var out = [];
+          var base64 = [];
           return [function() {
-            return out;
+            return base64;
           }, function(value) {
-            if (action(value)) {
+            if (defaultValue(value)) {
               value = extend(extend({}, value), {
                 timestamp : value.timestamp || Date.now()
               });
-              out = 0 <= index && out.length + 1 > index ? transform(fn(fn([], done(out), false), [value], false), index) : fn(fn([], done(out), false), [value], false);
+              base64 = 0 <= index && base64.length + 1 > index ? transform(fn(fn([], done(base64), false), [value], false), index) : fn(fn([], done(base64), false), [value], false);
             }
           }];
-        }(data, u, trans), 2);
-        u = data[0];
-        trans = data[1];
+        }(name, value, id), 2);
+        value = name[0];
+        id = name[1];
         /** @type {function(!Object): undefined} */
-        data = (callback = trans, function(response) {
+        name = (callback = id, function(e) {
           var reqErr;
           try {
-            reqErr = response.event.target ? parse(response.event.target) : parse(response.event);
+            reqErr = e.event.target ? run(e.event.target) : run(e.event);
           } catch (n) {
             /** @type {string} */
             reqErr = "<unknown>";
@@ -2797,20 +2831,20 @@
           if (0 !== reqErr.length) {
             callback({
               type : "dom",
-              category : "ui." + response.name,
+              category : "ui." + e.name,
               message : reqErr
             });
           }
         });
         /** @type {!Array} */
         var item = [];
-        if (foo) {
-          item.push(a("click", assert(data, "dom")));
-          item.push(next(assert(data, "dom")));
+        if (headerEl) {
+          item.push(header("click", compare(name, "dom")));
+          item.push(get(compare(name, "dom")));
           list.addEventListener("click", item[0]);
           list.addEventListener("keypress", item[1]);
         }
-        return [u, trans, function() {
+        return [value, id, function() {
           list.removeEventListener("click", item[0]);
           list.removeEventListener("keypress", item[1]);
         }];
@@ -2818,36 +2852,36 @@
     }
   };
   /** @type {string} */
-  var str = "breadcrumb";
-  var options = {
+  var x = "breadcrumb";
+  var data = {
     maxBreadcrumbs : 20,
     dom : true
   };
   /**
-   * @param {number} name
    * @param {number} options
-   * @param {number} data
-   * @param {!Array} callback
+   * @param {number} name
+   * @param {number} callback
+   * @param {!Array} id
    * @return {?}
    */
-  var onLoad = function(name, options, data, callback) {
-    if (void 0 === name && (name = goFetch() && apply()), void 0 === options && (options = window.Headers), void 0 === data && (data = window.Request), void 0 === callback && (callback = debug()), name && options && data) {
-      var cb = ok(callback);
-      return function(val, undefined) {
-        if (val.autoWrap) {
-          require(name, "fetch", create)(val, undefined, options, data, cb);
+  var request = function(options, name, callback, id) {
+    if (void 0 === options && (options = handleRequest() && apply()), void 0 === name && (name = window.Headers), void 0 === callback && (callback = window.Request), void 0 === id && (id = match()), options && name && callback) {
+      var ns = f(id);
+      return function(undefined, res) {
+        if (undefined.autoWrap) {
+          inject(options, "fetch", load)(undefined, res, name, callback, ns);
         }
-        return [function(results, value, a) {
-          return create(results, value = void 0 === value ? val : value, a = void 0 === a ? undefined : a, options, data, cb);
+        return [function(e, value, data) {
+          return load(e, value = void 0 === value ? undefined : value, data = void 0 === data ? res : data, name, callback, ns);
         }];
       };
     }
   };
   /** @type {string} */
   var url = "fetch";
-  var context = {
+  var frame = {
     autoWrap : true,
-    hookCbAtReq : string,
+    hookCbAtReq : noop,
     ignoreUrls : [],
     collectBodyOnError : false
   };
@@ -2860,16 +2894,16 @@
   /** @type {!Array} */
   var props = ["onload", "onerror", "onprogress", "onreadystatechange"];
   /** @type {string} */
-  var parent = "addEventListener";
+  var property = "addEventListener";
   /**
    * @param {number} window
    * @return {?}
    */
-  var listen = function(window) {
+  var bind = function(window) {
     if (window = void 0 === window ? apply() : window) {
       return function(opts, c) {
-        var handleMessage;
         var f;
+        var handleMessage;
         var fn = opts.ignoreErrors;
         var onerror = opts.onerror;
         var onunhandledrejection = opts.onunhandledrejection;
@@ -2877,8 +2911,8 @@
         opts = opts.captureGlobalAsync;
         var str = toString(fn);
         /** @type {!Array} */
-        var reactiveFunctions = [];
-        var parseInt = some();
+        var links = [];
+        var parseInt = connect();
         /**
          * @param {string} n
          * @param {!Object} event
@@ -2902,29 +2936,29 @@
           }
         };
         if (onerror) {
-          window.addEventListener("error", handleMessage = function(n) {
-            return l(filter(n));
+          window.addEventListener("error", f = function(n) {
+            return l(e(n));
           });
-          reactiveFunctions.push(function() {
-            return window.removeEventListener("error", handleMessage);
+          links.push(function() {
+            return window.removeEventListener("error", f);
           });
         }
         if (onunhandledrejection) {
-          window.addEventListener("unhandledrejection", f = function(row) {
-            debugger
-            return l(render(row));
+          window.addEventListener("unhandledrejection", handleMessage = function(n) {
+            debugger;
+            return l(handler(n));
           });
-          reactiveFunctions.push(function() {
-            return window.removeEventListener("unhandledrejection", f);
+          links.push(function() {
+            return window.removeEventListener("unhandledrejection", handleMessage);
           });
         }
         if (opts) {
-          reactiveFunctions.push(invoke(l));
+          links.push(create(l));
         }
         return [function(n, e, f) {
-          return l(h(n), e, f);
+          return l(g(n), e, f);
         }, function() {
-          reactiveFunctions.forEach(function(saveNotifs) {
+          links.forEach(function(saveNotifs) {
             return saveNotifs();
           });
         }];
@@ -2932,7 +2966,7 @@
     }
   };
   /** @type {string} */
-  var text = "jsError";
+  var parameter = "jsError";
   var req = {
     ignoreErrors : [],
     onerror : true,
@@ -2941,19 +2975,19 @@
     dedupe : true
   };
   /**
-   * @param {number} self
-   * @param {number} opts
-   * @param {!Array} options
+   * @param {number} el
+   * @param {number} options
+   * @param {!Array} f
    * @return {?}
    */
-  var main = function(self, opts, options) {
-    if (void 0 === self && (self = apply()), void 0 === opts && (opts = clone()), void 0 === options && (options = apply() && window.history), self && opts) {
+  var main = function(el, options, f) {
+    if (void 0 === el && (el = apply()), void 0 === options && (options = error()), void 0 === f && (f = apply() && window.history), el && options) {
       return function(config, dispatch) {
         var translated;
         var i;
         var rtval;
-        var resolve;
-        var save;
+        var $;
+        var init;
         var render;
         var set;
         var lastTrackInfoUrl;
@@ -2965,7 +2999,7 @@
         /** @type {!Array} */
         var failureRecaps = [];
         /** @type {!Function} */
-        var add = "manual" === name ? function() {
+        var remove = "manual" === name ? function() {
           return "";
         } : (translated = name, function(url) {
           var _currentHash;
@@ -3015,25 +3049,25 @@
               }
             });
           }
-        }, func || (i = opts.href, null !== (rtval = callback(i)) && void 0 !== rtval ? rtval : add(i)), add(opts.href), config), 2);
+        }, func || (i = options.href, null !== (rtval = callback(i)) && void 0 !== rtval ? rtval : remove(i)), remove(options.href), config), 2);
         var setter = cb[0];
         func = cb[1];
         config = setter.bind(null, "user_set");
         if ("manual" !== name) {
-          resolve = done((set = function(key, value) {
-            return setter(key, add(value), callback(value));
-          }, lastTrackInfoUrl = "", [function(manyArray, trackInfoUrl) {
+          $ = done((set = function(o, value) {
+            return setter(o, remove(value), callback(value));
+          }, lastTrackInfoUrl = "", [function(n, trackInfoUrl) {
             if (trackInfoUrl !== lastTrackInfoUrl) {
-              set(manyArray, lastTrackInfoUrl = trackInfoUrl);
+              set(n, lastTrackInfoUrl = trackInfoUrl);
             }
           }]), 1)[0];
           /**
            * @return {?}
            */
-          save = function() {
-            return resolve("history", opts.href);
+          init = function() {
+            return $("history", options.href);
           };
-          if (options) {
+          if (f) {
             /**
              * @param {!Function} value
              * @return {?}
@@ -3048,29 +3082,29 @@
                   args[i] = arguments[i];
                 }
                 try {
-                  value.apply(options, args);
+                  value.apply(f, args);
                 } finally {
-                  save();
+                  init();
                 }
               };
             };
-            failureRecaps.push(request(options, "pushState", cb)(), request(options, "replaceState", cb)());
+            failureRecaps.push(map(f, "pushState", cb)(), map(f, "replaceState", cb)());
           }
           if ("hash" === name) {
             /**
              * @return {?}
              */
             render = function() {
-              return resolve("hash", opts.href);
+              return $("hash", options.href);
             };
-            self.addEventListener("hashchange", render, true);
+            el.addEventListener("hashchange", render, true);
             failureRecaps.push(function() {
-              return self.removeEventListener("hashchange", render, true);
+              return el.removeEventListener("hashchange", render, true);
             });
           } else {
-            self.addEventListener("popstate", save, true);
+            el.addEventListener("popstate", init, true);
             failureRecaps.push(function() {
-              return self.removeEventListener("popstate", save, true);
+              return el.removeEventListener("popstate", init, true);
             });
           }
         }
@@ -3083,7 +3117,7 @@
     }
   };
   /** @type {string} */
-  var descWidth = "pageview";
+  var input = "pageview";
   var branch = {
     sendInit : true,
     routeMode : "history"
@@ -3091,15 +3125,15 @@
   /** @type {string} */
   var categoryId = "resource";
   /** @type {!Array} */
-  var result = ["xmlhttprequest", "fetch", "beacon"];
+  var validRequestTypes = ["xmlhttprequest", "fetch", "beacon"];
   /**
-   * @param {!Array} error
-   * @param {!Array} res
+   * @param {!Array} name
+   * @param {!Array} options
    * @param {!Array} t
    * @return {?}
    */
-  var end = function(error, res, t) {
-    if (void 0 === error && (error = debug()), void 0 === res && (res = map()), void 0 === t && (t = func()), error) {
+  var action = function(name, options, t) {
+    if (void 0 === name && (name = match()), void 0 === options && (options = clone()), void 0 === t && (t = getTime()), name) {
       return function(options, handler) {
         var assertion = options.ignoreUrls;
         var total = options.slowSessionThreshold;
@@ -3118,7 +3152,7 @@
             timeout = false;
           }
           cls = cls.filter(function(res) {
-            return !(resolve(null != data ? data : result, res.initiatorType) || null != doc && doc.test(res.name));
+            return !(resolve(null != data ? data : validRequestTypes, res.initiatorType) || null != doc && doc.test(res.name));
           });
           if (handler && cls.length) {
             cls.forEach(function(commentPayload) {
@@ -3129,8 +3163,8 @@
             });
           }
         };
-        var selectCategory = done(test(error), 3)[2];
-        initialize(function() {
+        var selectCategory = done(next(name), 3)[2];
+        clear(function() {
           var cb;
           var getCategoryWithIndex;
           dispatch(selectCategory(categoryId), function() {
@@ -3141,7 +3175,7 @@
             var total_icons = t.loadEventEnd - t.navigationStart;
             return total < total_icons;
           }());
-          cb = done(push(res, function(n, a, t) {
+          cb = done(forEach(options, function(n, a, t) {
             return 0 === a && dispatch(t);
           }), 2);
           getCategoryWithIndex = cb[0];
@@ -3158,93 +3192,100 @@
     }
   };
   /** @type {string} */
-  var p = "resource";
-  var opts = {
+  var path = "resource";
+  var size = {
     ignoreUrls : [],
-    slowSessionThreshold : 4E3
+    slowSessionThreshold : 4e3
   };
   /**
-   * @param {!Array} object
+   * @param {!Array} window
    * @param {!Array} name
    * @param {number} url
    * @return {?}
    */
-  var connect = function(object, name, url) {
-    if (void 0 === object && (object = apply()), void 0 === name && (name = debug()), void 0 === url && (url = null === location || void 0 === location ? void 0 : location.href), object) {
+  var setup = function(window, name, url) {
+    if (void 0 === window && (window = apply()), void 0 === name && (name = match()), void 0 === url && (url = null === location || void 0 === location ? void 0 : location.href), window) {
       return function(options, dispatch) {
         var fn = options.ignoreUrls;
-        var t = toString(options.includeUrls);
+        var predicate = options.includeUrls;
+        var dedupe = options.dedupe;
+        var result = toString(predicate);
         var str = toString(fn);
-        var sequence_values = done(test(name), 5)[4];
+        var sequence_values = done(next(name), 5)[4];
+        var url = void 0;
         /**
-         * @param {!Object} options
+         * @param {!Object} item
          * @return {undefined}
          */
-        var render = function(options) {
+        var handle = function(item) {
           var path;
           var value;
           var text;
-          var _ref1;
-          if (!(url && options.url === url)) {
-            if ((t && t.test(options.url) || !str || !str.test(options.url)) && (options.url || options.xpath && options.xpath !== auto)) {
-              value = sequence_values;
-              text = (path = options).url;
-              _ref1 = options.tagName;
-              path = options.xpath;
-              text = getText(text);
-              value = value(text)[0];
-              value = {
-                type : _ref1.toLowerCase(),
-                url : text,
-                xpath : path,
-                timing : value
-              };
-              if (dispatch) {
-                dispatch({
-                  ev_type : "resource_error",
-                  payload : value
-                });
+          var name;
+          if (!(url && item.url === url || result && !result.test(item.url) || str && str.test(item.url))) {
+            if (item.url || item.xpath && item.xpath !== value) {
+              if (!(dedupe && item.url === url)) {
+                url = item.url;
+                value = sequence_values;
+                text = (path = item).url;
+                name = item.tagName;
+                path = item.xpath;
+                text = getText(text);
+                value = value(text)[0];
+                value = {
+                  type : name.toLowerCase(),
+                  url : text,
+                  xpath : path,
+                  timing : value
+                };
+                if (dispatch) {
+                  dispatch({
+                    ev_type : "resource_error",
+                    payload : value
+                  });
+                }
               }
             }
           }
         };
         /**
-         * @param {!Object} id
+         * @param {!Object} e
          * @return {undefined}
          */
-        var init = function(id) {
-          id = id || object.event;
-          if (!!id) {
-            if (id = function(result) {
+        var init = function(e) {
+          e = e || window.event;
+          if (!!e) {
+            if (e = function(result) {
               var context = result.target || result.srcElement;
               if (context) {
                 var key = context.tagName;
-                if (key && isString(key)) {
-                  result = setAttribute(context);
+                if (key && isArray(key)) {
+                  result = template(context);
                   return {
                     url : result,
                     tagName : key,
-                    xpath : result ? void 0 : parse(context)
+                    xpath : result ? void 0 : run(context)
                   };
                 }
               }
-            }(id)) {
-              render(id);
+            }(e)) {
+              handle(e);
             }
           }
         };
-        object.addEventListener("error", init, true);
-        return [render, function() {
-          object.removeEventListener("error", init, true);
+        window.addEventListener("error", init, true);
+        return [handle, function() {
+          window.removeEventListener("error", init, true);
         }];
       };
     }
   };
   /** @type {string} */
-  var parameter = "resourceError";
-  var i = {
+  var str = "resourceError";
+  var options = {
     includeUrls : [],
-    ignoreUrls : []
+    ignoreUrls : [],
+    dedupe : true
   };
   var defaults = {
     isSupport : true,
@@ -3254,75 +3295,75 @@
     type : "perf"
   };
   /** @type {string} */
-  var artistTrack = "first-input";
+  var GET_AUTH_URL_TIMEOUT = "first-input";
   /** @type {string} */
-  var which = "largest-contentful-paint";
+  var buffer = "largest-contentful-paint";
   /** @type {!Array} */
   var pointerEvents = ["keydown", "click"];
   /** @type {string} */
   var entryName = "first-contentful-paint";
   /** @type {string} */
-  var type = "longtask";
+  var div = "longtask";
   /**
-   * @param {!Object} options
+   * @param {string} result
    * @return {?}
    */
-  var wrapper = function(options) {
-    return void 0 === options && (options = debug()), function(params, next) {
+  var wrapper = function(result) {
+    return void 0 === result && (result = match()), function(id, next) {
       var scrollHeightObserver;
       var findLocation;
       var gotoNewOfflinePage;
-      var memId = params.precollect;
-      var filePath = params.fp;
-      var inserted_text = params.fcp;
-      var cheevo = params.lcp;
-      var fid = params.fid;
-      var optimization_info = params.mpfid;
-      var values = params.timing;
+      var iframe = id.precollect;
+      var me = id.fp;
+      var dims = id.fcp;
+      var terminatingEntry = id.lcp;
+      var fid = id.fid;
+      var name = id.mpfid;
+      var timing = id.timing;
       /**
-       * @param {string} state
+       * @param {string} data
        * @return {undefined}
        */
-      params = function(state) {
+      id = function(data) {
         if (next) {
           next({
             ev_type : "performance",
-            payload : state
+            payload : data
           });
         }
       };
-      if (filePath) {
-        setTimeout(expand, {
+      if (me) {
+        require(test, {
           metricName : "fp",
           entryName : "first-paint"
-        }, params);
+        }, id);
       }
-      if (inserted_text) {
-        setTimeout(expand, {
+      if (dims) {
+        require(test, {
           metricName : "fcp",
           entryName : entryName
-        }, params);
+        }, id);
       }
-      if (cheevo) {
-        setTimeout(setup, {
-          precollect : memId
-        }, params);
+      if (terminatingEntry) {
+        require(plugin, {
+          precollect : iframe
+        }, id);
       }
       if (fid) {
-        setTimeout(execute, 0, params);
+        require(link, 0, id);
       }
-      if (optimization_info) {
-        scrollHeightObserver = done(setTimeout(save, {
-          precollect : memId
-        }, params), 1)[0];
-        initialize(function() {
+      if (name) {
+        scrollHeightObserver = done(require(query, {
+          precollect : iframe
+        }, id), 1)[0];
+        clear(function() {
           return setTimeout(scrollHeightObserver, 200);
         });
       }
-      if (values) {
-        findLocation = done(test(options), 3)[2];
-        gotoNewOfflinePage = done(call(function(n) {
-          var timing = options && options.timing || void 0;
+      if (timing) {
+        findLocation = done(next(result), 3)[2];
+        gotoNewOfflinePage = done(push(function(n) {
+          var timing = result && result.timing || void 0;
           var t = findLocation("navigation")[0];
           if (next) {
             next({
@@ -3335,28 +3376,28 @@
             });
           }
         }), 1)[0];
-        initialize(function() {
+        clear(function() {
           gotoNewOfflinePage(false);
         });
-        addEventListener(function() {
+        on(function() {
           gotoNewOfflinePage(true);
         });
       }
     };
   };
   /** @type {string} */
-  var grid = "layout-shift";
+  var menu = "layout-shift";
   /**
-   * @param {!Array} result
+   * @param {!Array} options
    * @return {?}
    */
-  var close = function(result) {
-    return void 0 === result && (result = map()), function(cb, callback) {
+  var process = function(options) {
+    return void 0 === options && (options = clone()), function(cb, callback) {
       /**
        * @param {string} n
        * @return {undefined}
        */
-      function value(n) {
+      function action(n) {
         var nodeMinPrice = n.hadRecentInput;
         n = n.value;
         if (!nodeMinPrice) {
@@ -3365,20 +3406,20 @@
       }
       var func = done(cb, 1)[0];
       var ret = $("cls", 0);
-      if (!result) {
+      if (!options) {
         return ret.isSupport = false, [function() {
           return callback && callback(ret);
-        }, b];
+        }, undefined];
       }
-      (func.entries || []).forEach(function(item) {
-        if (item.entryType === grid) {
-          value(item);
+      (func.entries || []).forEach(function(e) {
+        if (e.entryType === menu) {
+          action(e);
         }
       });
-      cb = done(push(result, value), 2);
+      cb = done(forEach(options, action), 2);
       func = cb[0];
       cb = cb[1];
-      return func(grid), [function() {
+      return func(menu), [function() {
         if (callback) {
           callback(ret);
         }
@@ -3389,16 +3430,16 @@
   /** @type {string} */
   var control = "longtask";
   /**
-   * @param {!Array} values
+   * @param {!Array} options
    * @return {?}
    */
-  var animate = function(values) {
-    return void 0 === values && (values = map()), function(v, fn) {
+  var sync = function(options) {
+    return void 0 === options && (options = clone()), function(v, fn) {
       /**
        * @param {!Array} result
        * @return {undefined}
        */
-      function step(result) {
+      function cb(result) {
         if (fn) {
           fn({
             longtasks : result,
@@ -3410,11 +3451,11 @@
       v = (void 0 === data ? [] : data).filter(function(options) {
         return options.entryType === control;
       });
-      if (v.length && step(v), !values) {
-        return [b];
+      if (v.length && cb(v), !options) {
+        return [undefined];
       }
-      data = done(push(values, function(n) {
-        return step([n]);
+      data = done(forEach(options, function(error) {
+        return cb([error]);
       }, false), 2);
       v = data[0];
       data = data[1];
@@ -3424,7 +3465,7 @@
   /**
    * @return {?}
    */
-  var draw = function() {
+  var keyboard = function() {
     return function(n, e) {
       /** @type {number} */
       var x = 0;
@@ -3443,21 +3484,21 @@
       /**
        * @return {undefined}
        */
-      var ready = function() {
+      var go = function() {
         f(Date.now() - x);
         /** @type {number} */
         x = 0;
       };
-      return addEventListener(function() {
+      return on(function() {
         if (x) {
           /** @type {boolean} */
           select.isBounced = true;
-          ready();
+          go();
         }
       }), [function() {
         /** @type {number} */
         x = Date.now();
-      }, ready];
+      }, go];
     };
   };
   /** @type {string} */
@@ -3479,13 +3520,13 @@
   /**
    * @param {number} name
    * @param {number} callback
-   * @param {number} value
-   * @param {!Array} options
-   * @param {number} file
+   * @param {number} options
+   * @param {!Array} type
+   * @param {number} results
    * @return {?}
    */
-  var exports = function(name, callback, value, options, file) {
-    return void 0 === name && (name = encode()), void 0 === callback && (callback = goFetch() && apply()), void 0 === value && (value = map()), void 0 === options && (options = compile()), void 0 === file && (file = debug()), function(result, check, write, cb) {
+  var exports = function(name, callback, options, type, results) {
+    return void 0 === name && (name = check()), void 0 === callback && (callback = handleRequest() && apply()), void 0 === options && (options = clone()), void 0 === type && (type = def()), void 0 === results && (results = match()), function(result, check, write, cb) {
       /**
        * @param {string} data
        * @return {undefined}
@@ -3496,13 +3537,13 @@
         createIsSearchQueryChangedFunction(status);
       }
       var status = $("tti", 0);
-      var createIsSearchQueryChangedFunction = done(call(function(sessionId) {
+      var createIsSearchQueryChangedFunction = done(push(function(sessionId) {
         sessionId = register(sessionId);
         if (check) {
           check(sessionId);
         }
       }), 1)[0];
-      if (!(name && callback && value && file)) {
+      if (!(name && callback && options && results)) {
         return status.isSupport = false, createIsSearchQueryChangedFunction(status), [function() {
           return 0;
         }];
@@ -3516,7 +3557,7 @@
       data = result.entries;
       var deg = void 0 === data ? [] : data;
       var observer = result.observer;
-      data = done(test(file), 5);
+      data = done(next(results), 5);
       var text = data[0];
       var id = data[1];
       var updateIsBeat = data[4];
@@ -3524,7 +3565,7 @@
       data = result[0];
       var buildCompleted = result[1];
       var res = result[2];
-      errors = done(send(callback, name, value, options)(errors ? [] : deg, res, id), 3);
+      errors = done(report(callback, name, options, type)(errors ? [] : deg, res, id), 3);
       var err = errors[0];
       var buildStarted = errors[1];
       var x = errors[2];
@@ -3550,13 +3591,13 @@
       var update = function(callback) {
         var e = updateIsBeat("first-contentful-paint")[0];
         e = function(tmp, hatWidth, ay, oy, o) {
-          if (oy - ay < 5E3) {
+          if (oy - ay < 5e3) {
             return null;
           }
           o = 0 === o.length ? tmp : o[o.length - 1].end;
-          return oy - o < 5E3 ? null : Math.max(o, hatWidth);
-        }((e ? e.startTime : calculateBars(text)) || 0, bindingDefinitions || calculateBars(text) || 0, x(), id() + (callback ? 0 : 5E3), err);
-        return callback ? e ? (onChildOutput(), void callback(e)) : res(id() + 1E3) : (onChildOutput(), e);
+          return oy - o < 5e3 ? null : Math.max(o, hatWidth);
+        }((e ? e.startTime : calculateBars(text)) || 0, bindingDefinitions || calculateBars(text) || 0, x(), id() + (callback ? 0 : 5e3), err);
+        return callback ? e ? (onChildOutput(), void callback(e)) : res(id() + 1e3) : (onChildOutput(), e);
       };
       if (cb && cb(err, res, status), err.notSupport) {
         return status.isSupport = false, createIsSearchQueryChangedFunction(status), [function() {
@@ -3566,7 +3607,7 @@
       cb = err[err.length - 1];
       data(function() {
         return update(select);
-      }, Math.max(x() + 5E3, cb ? cb.end : 0));
+      }, Math.max(x() + 5e3, cb ? cb.end : 0));
       return [function() {
         return update() || 0;
       }];
@@ -3577,79 +3618,79 @@
   /** @type {!Array} */
   var width = ["SCRIPT", "STYLE", "META", "HEAD"];
   /**
-   * @param {number} data
-   * @param {!Array} element
-   * @param {!Object} y
-   * @param {!Array} immediate
-   * @param {!Object} name
+   * @param {number} name
+   * @param {!Array} options
+   * @param {string} time
+   * @param {!Array} error
+   * @param {!Object} url
    * @return {?}
    */
-  var bind = function(data, element, y, immediate, name) {
-    var payload;
-    return void 0 === data && (data = join()), void 0 === element && (element = compile()), void 0 === y && (y = null === (payload = func()) || void 0 === payload ? void 0 : payload.navigationStart), void 0 === immediate && (immediate = function() {
+  var initialize = function(name, options, time, error, url) {
+    var t;
+    return void 0 === name && (name = join()), void 0 === options && (options = def()), void 0 === time && (time = null === (t = getTime()) || void 0 === t ? void 0 : t.navigationStart), void 0 === error && (error = function() {
       if (apply() && "requestAnimationFrame" in window) {
         return window.requestAnimationFrame;
       }
-    }()), void 0 === name && (name = function() {
+    }()), void 0 === url && (url = function() {
       if (apply() && "cancelAnimationFrame" in window) {
         return window.cancelAnimationFrame;
       }
-    }()), function(a, check) {
+    }()), function(fn, C) {
       /**
        * @return {?}
        */
       function next() {
         return res.push({
-          time : Date.now() - height,
-          score : position(data && data.body, 1, false, width)
+          time : Date.now() - now,
+          score : position(name && name.body, 1, false, width)
         });
       }
-      var mouseDownOnDragHandler = a.renderType;
+      var mouseDownOnDragHandler = fn.renderType;
       var s = $("fmp", 0);
       /**
-       * @param {string} sessionId
+       * @param {string} i
        * @return {undefined}
        */
-      var cb = function(sessionId) {
-        sessionId = register(sessionId);
-        if (check) {
-          check(sessionId);
+      var e = function(i) {
+        i = register(i);
+        if (C) {
+          C(i);
         }
       };
       if ("SSR" === mouseDownOnDragHandler) {
-        return setTimeout(expand, {
+        return require(test, {
           metricName : "fmp",
           entryName : entryName
-        }, cb), [b];
+        }, e), [undefined];
       }
-      var errf = done(call(cb), 1)[0];
-      if (!data || !element || !y) {
-        return s.isSupport = false, errf(s), [b];
+      var updateHoldStat = done(push(e), 1)[0];
+      if (!name || !options || !time) {
+        return s.isSupport = false, updateHoldStat(s), [undefined];
       }
       var widget;
-      var item;
-      var getItemAtIndex;
-      var cls;
+      var v;
+      var o;
+      var renderFn;
       /** @type {number} */
-      var height = Date.now();
+      var now = Date.now();
       /** @type {!Array} */
       var res = [];
-      var initFiatRateService = done((widget = data, a = name, mouseDownOnDragHandler = true, getItemAtIndex = !isArray(cb = immediate) || mouseDownOnDragHandler && widget && widget.hidden ? function(iteratee) {
+      var initFiatRateService = done((widget = name, fn = url, mouseDownOnDragHandler = true, o = !isFunction(e = error) || mouseDownOnDragHandler && widget && widget.hidden ? function(iteratee) {
         return iteratee(0), 0;
-      } : cb, cls = isArray(a) ? a : b, [function(i) {
-        if (item) {
-          cls(item);
+      } : e, renderFn = isFunction(fn) ? fn : undefined, [function(n) {
+        if (v) {
+          renderFn(v);
         }
-        item = getItemAtIndex(i);
-      }, getItemAtIndex, cls]), 1)[0];
-      cb = done(log(element, function() {
+        v = o(n);
+      }, o, renderFn]), 1)[0];
+      e = done(log(options, function() {
         return initFiatRateService(next);
       }), 2);
-      a = cb[0];
-      var func = cb[1];
+      fn = e[0];
+      var evts = e[1];
       /** @type {number} */
-      cb = height - (y || 0);
-      return a(data, {
+      e = now - (time || 0);
+      return fn(name, {
         subtree : true,
         childList : true
       }), [function(part) {
@@ -3657,7 +3698,7 @@
           /** @type {number} */
           part = 0;
         }
-        func();
+        evts();
         var result;
         var contexts;
         result = (result = (contexts = done(void 0 === (result = res) ? [] : result))[0], (contexts = contexts.slice(1)) && contexts.reduce(function(result, b) {
@@ -3675,13 +3716,13 @@
           rate : 0
         }])[1].time || 0);
         s.value = result ? result + part : 0;
-        errf(s);
-      }.bind(null, cb)];
+        updateHoldStat(s);
+      }.bind(null, e)];
     };
   };
   /** @type {string} */
-  var max = "fmp";
-  var arg = {
+  var definition = "fmp";
+  var j = {
     renderType : "CSR"
   };
   /** @type {!Array} */
@@ -3689,18 +3730,18 @@
   /** @type {!Array} */
   var utils = ["js_error", "http", "resource_error"];
   /** @type {number} */
-  var maxDepth = 1E4;
+  var maxDepth = 1e4;
   /** @type {number} */
-  var HOVER_DELAY = 8E3;
+  var HOVER_DELAY = 8e3;
   /** @type {number} */
-  var timeout = 2E3;
+  var timeout = 2e3;
   /** @type {number} */
-  var radius2 = 1E4;
+  var radius2 = 1e4;
   /**
    * @param {!Object} self
    * @return {?}
    */
-  var schedule = function(self) {
+  var addListener = function(self) {
     return self.requestIdleCallback || function(n) {
       return self.setTimeout(n, 1);
     };
@@ -3765,41 +3806,41 @@
   };
   /**
    * @param {!Function} callback
-   * @param {!Object} item
+   * @param {!Object} node
    * @param {!Object} self
-   * @param {!Object} context
+   * @param {!Object} doc
    * @return {?}
    */
-  var cleanup = function(callback, item, self, context) {
+  var cb = function(callback, node, self, doc) {
     /**
      * @return {undefined}
      */
-    function next() {
-      schedule(self)(function() {
-        self.html2canvas(context.body, {
+    function success() {
+      addListener(self)(function() {
+        self.html2canvas(doc.body, {
           scale : 360 / self.innerWidth
         }).then(function(canvas) {
-          callback(canvas.toDataURL("image/jpeg", .1));
+          callback(canvas.toDataURL("image/jpeg", 0.1));
         });
       });
     }
-    if (apply() && "Promise" in window && Promise && self && context) {
+    if (apply() && "Promise" in window && Promise && self && doc) {
       if (self.html2canvas) {
-        return next();
+        return success();
       }
-      var res = context.createElement("script");
+      var g = doc.createElement("script");
       /** @type {!Object} */
-      res.src = item;
-      if (null !== (item = context.head) && void 0 !== item) {
-        item.appendChild(res);
+      g.src = node;
+      if (null !== (node = doc.head) && void 0 !== node) {
+        node.appendChild(g);
       }
       /** @type {function(): undefined} */
-      res.onload = next;
+      g.onload = success;
     }
   };
   /** @type {string} */
-  var zoom = "blankScreen";
-  var args = {
+  var type = "blankScreen";
+  var values = {
     autoDetect : true,
     threshold : 1.5,
     screenshot : true,
@@ -3812,7 +3853,7 @@
    * @return {?}
    */
   var decode = function(data) {
-    if (data && callback(data) && data.name && isString(data.name)) {
+    if (data && callback(data) && data.name && isArray(data.name)) {
       var result = {
         name : data.name,
         type : "event"
@@ -3832,7 +3873,7 @@
         var categories = data.categories;
         var values = {};
         for (i in categories) {
-          values[i] = parseInt(categories[i]);
+          values[i] = stringify(categories[i]);
         }
         result.categories = values;
       }
@@ -3843,14 +3884,14 @@
    * @param {!Object} data
    * @return {?}
    */
-  var parseNode = function(data) {
-    if (data && callback(data) && data.content && isString(data.content)) {
-      var node = {
-        content : parseInt(data.content),
+  var list = function(data) {
+    if (data && callback(data) && data.content && isArray(data.content)) {
+      var item = {
+        content : stringify(data.content),
         type : "log",
         level : "info"
       };
-      if ("level" in data && (node.level = data.level), "extra" in data && callback(data.extra)) {
+      if ("level" in data && (item.level = data.level), "extra" in data && callback(data.extra)) {
         var i;
         var values = data.extra;
         var res = {};
@@ -3859,96 +3900,96 @@
           if (isFinite(values[i])) {
             res[i] = values[i];
           } else {
-            result[i] = parseInt(values[i]);
+            result[i] = stringify(values[i]);
           }
         }
-        node.metrics = res;
-        node.categories = result;
+        item.metrics = res;
+        item.categories = result;
       }
-      return node;
+      return item;
     }
   };
   /**
-   * @param {!Object} _
+   * @param {!Object} conn
    * @return {undefined}
    */
-  var getData = function(_) {
-    var a = select();
-    var index = getIndex(a);
-    if (a) {
+  var success = function(conn) {
+    var input = select();
+    var result = appendChild(input);
+    if (input) {
       /**
        * @return {undefined}
        */
-      a.onchange = function() {
-        index = getIndex(a);
+      input.onchange = function() {
+        result = appendChild(input);
       };
     }
-    _.on("report", function(data) {
+    conn.on("report", function(data) {
       return extend(extend({}, data), {
         extra : extend(extend({}, data.extra || {}), {
-          network_type : index
+          network_type : result
         })
       });
     });
   };
   /**
-   * @param {string} app
-   * @param {number} v
-   * @param {!Function} options
-   * @param {!Function} value
+   * @param {string} m
+   * @param {number} b
+   * @param {!Function} name
+   * @param {!Function} type
    * @return {?}
    */
-  var validate = function(app, v, options, value) {
-    if (!v) {
-      return string;
+  var init = function(m, b, name, type) {
+    if (!b) {
+      return noop;
     }
-    var i = v.sample_rate;
-    var item = v.include_users;
-    var p = v.sample_granularity;
-    var w = v.rules;
-    v = v.r;
-    v = void 0 === v ? Math.random() : v;
-    if (resolve(item, app)) {
-      return function(header) {
-        return append(header, 1);
+    var val = b.sample_rate;
+    var i = b.include_users;
+    var p = b.sample_granularity;
+    var w = b.rules;
+    b = b.r;
+    b = void 0 === b ? Math.random() : b;
+    if (resolve(i, m)) {
+      return function(data) {
+        return setTimeout(data, 1);
       };
     }
     var o;
     var r;
     var num_channels;
-    var index;
-    var props;
+    var a;
     var cb;
-    var _obj;
+    var args;
+    var _data;
     /** @type {boolean} */
     p = "session" === p;
-    var result = set(p, i, options, v, value);
-    var obj = (o = w, r = p, num_channels = i, index = options, props = v, cb = value, _obj = {}, Object.keys(o).forEach(function(i) {
+    var result = exec(p, val, name, b, type);
+    var data = (o = w, r = p, num_channels = val, a = name, cb = b, args = type, _data = {}, Object.keys(o).forEach(function(i) {
       var d = o[i];
       var enable = d.enable;
       var sample_rate = d.sample_rate;
       d = d.conditional_sample_rules;
       if (enable) {
-        _obj[i] = {
+        _data[i] = {
           enable : enable,
           sample_rate : sample_rate,
           effectiveSampleRate : sample_rate * num_channels,
-          hit : set(r, sample_rate, index, props, cb)
+          hit : exec(r, sample_rate, a, cb, args)
         };
         if (d) {
-          _obj[i].conditional_hit_rules = d.map(function(filters) {
+          _data[i].conditional_hit_rules = d.map(function(filters) {
             var sample_rate = filters.sample_rate;
             filters = filters.filter;
             return {
               sample_rate : sample_rate,
-              hit : set(r, sample_rate, index, props, cb),
+              hit : exec(r, sample_rate, a, cb, args),
               effectiveSampleRate : sample_rate * num_channels,
               filter : filters
             };
           });
         }
       } else {
-        _obj[i] = {
+        _data[i] = {
           enable : enable,
           hit : function() {
             return false;
@@ -3957,32 +3998,32 @@
           effectiveSampleRate : 0
         };
       }
-    }), _obj);
-    return function(item) {
+    }), _data);
+    return function(self) {
       if (!result()) {
         return false;
       }
-      if (!(item.ev_type in obj)) {
-        return append(item, i);
+      if (!(self.ev_type in data)) {
+        return setTimeout(self, val);
       }
-      if (!obj[item.ev_type].enable) {
+      if (!data[self.ev_type].enable) {
         return false;
       }
-      if (null !== (info = item.common) && void 0 !== info && info.sample_rate) {
-        return item;
+      if (null !== (base = self.common) && void 0 !== base && base.sample_rate) {
+        return self;
       }
-      var info = obj[item.ev_type];
-      var s = info.conditional_hit_rules;
-      if (s) {
+      var base = data[self.ev_type];
+      var array = base.conditional_hit_rules;
+      if (array) {
         /** @type {number} */
         var i = 0;
-        for (; i < s.length; i++) {
-          if (check(item, s[i].filter)) {
-            return !!s[i].hit() && append(item, s[i].effectiveSampleRate);
+        for (; i < array.length; i++) {
+          if (filter(self, array[i].filter)) {
+            return !!array[i].hit() && setTimeout(self, array[i].effectiveSampleRate);
           }
         }
       }
-      return !!info.hit() && append(item, info.effectiveSampleRate);
+      return !!base.hit() && setTimeout(self, base.effectiveSampleRate);
     };
   };
   /**
@@ -3994,12 +4035,12 @@
   var ajax = function(type, options, xhr) {
     var onlineURL = options.url;
     var o = options.data;
-    var a = options.success;
-    var id = void 0 === a ? b : a;
-    a = options.fail;
-    var callback = void 0 === a ? b : a;
-    a = options.getResponseText;
-    var max = void 0 === a ? b : a;
+    var fn = options.success;
+    var iterator = void 0 === fn ? undefined : fn;
+    fn = options.fail;
+    var callback = void 0 === fn ? undefined : fn;
+    fn = options.getResponseText;
+    var compile = void 0 === fn ? undefined : fn;
     options = options.withCredentials;
     options = void 0 !== options && options;
     xhr = new xhr;
@@ -4011,17 +4052,17 @@
      * @return {undefined}
      */
     xhr.onload = function() {
-      if (null != max) {
-        max(this.responseText);
+      if (null != compile) {
+        compile(this.responseText);
       }
       try {
-        var result;
+        var items;
         if (this.responseText) {
           /** @type {*} */
-          result = JSON.parse(this.responseText);
-          id(result);
+          items = JSON.parse(this.responseText);
+          iterator(items);
         } else {
-          id({});
+          iterator({});
         }
       } catch (n) {
         callback(n);
@@ -4045,25 +4086,25 @@
    * @return {?}
    */
   var api = function() {
-    var item = encode();
-    return item ? {
+    var error = check();
+    return error ? {
       get : function(data) {
-        ajax("GET", data, item);
+        ajax("GET", data, error);
       },
       post : function(data) {
-        ajax("POST", data, item);
+        ajax("POST", data, error);
       }
     } : {
-      get : b,
-      post : b
+      get : undefined,
+      post : undefined
     };
   };
-  var colWidths = {
-    build : function(data) {
+  var fragments = {
+    build : function(options) {
       return {
-        ev_type : data.ev_type,
-        payload : data.payload,
-        common : extend(extend({}, data.extra || {}), data.overrides || {})
+        ev_type : options.ev_type,
+        payload : options.payload,
+        common : extend(extend({}, options.extra || {}), options.overrides || {})
       };
     }
   };
@@ -4092,7 +4133,7 @@
     return void 0 === id && (id = el), (prefix && 0 <= prefix.indexOf("//") ? "" : "https://") + prefix + id;
   };
   /** @type {function(): ?} */
-  var action = template;
+  var getSessionId = mobileLogin;
   /**
    * @param {!Object} data
    * @return {?}
@@ -4102,8 +4143,8 @@
      * @return {undefined}
      */
     function done() {
-      var defaults = extend(extend(extend({}, data), config || {}), opts);
-      defaults.plugins = function() {
+      var opts = extend(extend(extend({}, data), config || {}), defaults);
+      opts.plugins = function() {
         /** @type {!Array} */
         var a = [];
         /** @type {number} */
@@ -4111,16 +4152,16 @@
         for (; i < arguments.length; i++) {
           a[i] = arguments[i];
         }
-        var result = {};
+        var x = {};
         /** @type {number} */
         var d = 0;
         for (; d < a.length;) {
-          result = replace(result, a[d++]);
+          x = parse(x, a[d++]);
         }
-        return result;
-      }(data.plugins, (null == config ? void 0 : config.plugins) || {}, opts.plugins || {});
-      defaults.sample = find(find(data.sample, null == config ? void 0 : config.sample), opts.sample);
-      options = defaults;
+        return x;
+      }(data.plugins, (null == config ? void 0 : config.plugins) || {}, defaults.plugins || {});
+      opts.sample = add(add(data.sample, null == config ? void 0 : config.sample), defaults.sample);
+      options = opts;
       val();
     }
     /**
@@ -4166,11 +4207,11 @@
     var config;
     /** @type {!Object} */
     var options = data;
-    var opts = {};
+    var defaults = {};
     /** @type {function(): undefined} */
-    var f = b;
+    var f = undefined;
     /** @type {function(): undefined} */
-    var val = b;
+    var val = undefined;
     return {
       getConfig : function() {
         return options;
@@ -4178,7 +4219,7 @@
       setConfig : function(data) {
         var url;
         var cb;
-        return opts = extend(extend({}, opts), data || {}), done(), autoReview || (autoReview = data, options.useLocalConfig ? (config = {}, f()) : fields ? add() : (url = options.domain, data = options.aid, cb = function(options) {
+        return defaults = extend(extend({}, defaults), data || {}), done(), autoReview || (autoReview = data, options.useLocalConfig ? (config = {}, f()) : fields ? add() : (url = options.domain, data = options.aid, cb = function(options) {
           /** @type {string} */
           fields = options;
           add();
@@ -4187,8 +4228,8 @@
           url : function(s, idTo) {
             return void 0 === idTo && (idTo = columnIds), (s && 0 <= s.indexOf("//") ? "" : "https://") + s + idTo;
           }(url) + "?aid=" + data,
-          success : function(tree) {
-            cb(tree.data || {});
+          success : function(i) {
+            cb(i.data || {});
           },
           fail : function() {
             cb();
@@ -4220,32 +4261,32 @@
       }
     };
   };
-  var method;
-  var provider;
+  var index;
+  var _ref;
   var obj;
   var key;
-  var val;
-  var cb;
-  var server;
-  var self;
-  var client;
-  var node;
-  var params;
-  var left;
-  var a;
-  var me;
-  var ref;
+  var track;
+  var plugins;
+  var results;
+  var context;
   var model;
-  var data;
-  var undefined;
+  var me;
+  var params;
+  var elem;
+  var listener;
+  var that;
+  var ref;
+  var node;
+  var self;
+  var args;
   /**
-   * @param {!Object} _
+   * @param {!Object} conn
    * @return {undefined}
    */
-  var sync = function(_) {
-    _.on("report", function(value) {
+  var open = function(conn) {
+    conn.on("report", function(value) {
       return options = value, value = {
-        url : toJSON(),
+        url : emit(),
         timestamp : Date.now()
       }, extend(extend({}, options), {
         extra : extend(extend({}, value), options.extra || {})
@@ -4253,7 +4294,7 @@
       var options;
     });
   };
-  var value = {
+  var i = {
     sri : "reportSri",
     st : "reportResourceError",
     err : "captureException"
@@ -4262,75 +4303,75 @@
    * @param {?} b
    * @return {?}
    */
-  var eq = function(b) {
+  var mergeOptions = function(b) {
     return Object.keys(b).reduce(function(n, nodeType) {
       return n[nodeType] = [], n;
     }, {});
   };
   /**
-   * @param {!Object} map
+   * @param {!Object} v
    * @return {?}
    */
-  var createTest = function(map) {
-    return Object.keys(map).reduce(function(r, k) {
-      return r[map[k]] = k, r;
+  var serializeDate = function(v) {
+    return Object.keys(v).reduce(function(r, k) {
+      return r[v[k]] = k, r;
     }, {});
   };
   /**
+   * @param {!Object} data
    * @param {!Object} obj
-   * @param {!Object} v
-   * @param {!Object} str
+   * @param {!Object} id
    * @return {?}
    */
-  var combine = function(obj, v, str) {
-    return function(i, asset, x, ref) {
-      if (void 0 === x) {
+  var walk = function(data, obj, id) {
+    return function(i, value, result, x) {
+      if (void 0 === result) {
         /** @type {number} */
-        x = Date.now();
+        result = Date.now();
       }
-      if (void 0 === ref) {
+      if (void 0 === x) {
         /** @type {string} */
-        ref = location.href;
+        x = location.href;
       }
-      ref = extend(extend({}, f(obj)), {
-        url : ref,
-        timestamp : x
+      x = extend(extend({}, end(data)), {
+        url : x,
+        timestamp : result
       });
-      if (v[i]) {
-        if (obj[str[i]]) {
-          forEach(obj, ref)(function() {
-            obj[str[i]](asset);
+      if (obj[i]) {
+        if (data[id[i]]) {
+          func(data, x)(function() {
+            data[id[i]](value);
           });
         } else {
-          if (null !== (x = v[i]) && void 0 !== x) {
-            x.push([asset, ref]);
+          if (null !== (result = obj[i]) && void 0 !== result) {
+            result.push([value, x]);
           }
         }
       }
     };
   };
   /**
-   * @param {!Object} fn
-   * @param {!Object} obj
-   * @param {!Object} result
+   * @param {!Object} client
+   * @param {!Object} data
+   * @param {!Object} params
    * @return {?}
    */
-  var hook = function(fn, obj, result) {
+  var stream = function(client, data, params) {
     return function(i) {
-      var OPTIONS;
-      if (i in result) {
-        if (null !== (OPTIONS = obj[result[i]]) && void 0 !== OPTIONS) {
-          OPTIONS.forEach(function(value) {
-            value = done(value, 2);
-            var f = value[0];
-            value = value[1];
-            forEach(fn, value)(function() {
-              fn[i](f);
+      var a;
+      if (i in params) {
+        if (null !== (a = data[params[i]]) && void 0 !== a) {
+          a.forEach(function(s) {
+            s = done(s, 2);
+            var entry = s[0];
+            s = s[1];
+            func(client, s)(function() {
+              client[i](entry);
             });
           });
         }
         /** @type {null} */
-        obj[result[i]] = null;
+        data[params[i]] = null;
       }
     };
   };
@@ -4365,12 +4406,12 @@
     });
   };
   /**
-   * @param {!Object} event
+   * @param {!Object} handlers
    * @return {undefined}
    */
-  var handle = function(event) {
-    event.on("beforeBuild", function(data) {
-      return options = data, $stateParams = event.config(), (data = {}).aid = $stateParams.aid, data.pid = $stateParams.pid, data.view_id = $stateParams.viewId, data.user_id = $stateParams.userId, extend(extend({}, options), {
+  var handle = function(handlers) {
+    handlers.on("beforeBuild", function(data) {
+      return options = data, $stateParams = handlers.config(), (data = {}).aid = $stateParams.aid, data.pid = $stateParams.pid, data.view_id = $stateParams.viewId, data.user_id = $stateParams.userId, extend(extend({}, options), {
         extra : extend(extend({}, data), options.extra || {})
       });
       var options;
@@ -4378,13 +4419,13 @@
     });
   };
   /**
-   * @param {!Object} msg
+   * @param {!Object} event
    * @return {undefined}
    */
-  var next = function(msg) {
-    msg.on("start", function() {
+  var fetch = function(event) {
+    event.on("start", function() {
       var name;
-      var config = msg.config();
+      var config = event.config();
       var deviceId = config.deviceId;
       var id = config.sessionId;
       var release = config.release;
@@ -4396,7 +4437,7 @@
         release : release,
         env : env,
         sname : sname,
-        sversion : "1.2.1",
+        sversion : "1.2.4",
         soffset : config || 0
       };
       /** @type {string} */
@@ -4405,7 +4446,7 @@
         /** @type {string} */
         b = b + ("&" + name + "=" + options[name]);
       }
-      config = msg.getSender();
+      config = event.getSender();
       config.setEndpoint(config.getEndpoint() + b.replace("&", "?"));
     });
   };
@@ -4421,7 +4462,7 @@
       viewId : "__" + Date.now(),
       userId : data.userId,
       deviceId : data.deviceId,
-      sessionId : action(),
+      sessionId : getSessionId(),
       domain : "apmplus.volces.com",
       plugins : {
         ajax : {
@@ -4447,13 +4488,13 @@
       })
     };
   };
-  var target = (undefined = function(value) {
+  var target = (args = function(value) {
     /** @type {({})} */
     var result = void 0 === value ? {} : value;
-    var courseSections = result.createSender;
+    var persistedDto = result.createSender;
     value = result.builder;
     result = result.createDefaultConfig;
-    var data = function(_) {
+    var options = function(_) {
       /**
        * @param {string} name
        * @param {number} val1
@@ -4471,7 +4512,7 @@
         for (; i < arguments.length; i++) {
           list[i - 2] = arguments[i];
         }
-        args[name].forEach(function(val) {
+        obj[name].forEach(function(val) {
           try {
             val.apply(void 0, fn([], done(list), false));
           } catch (n) {
@@ -4479,12 +4520,12 @@
         });
         if (val1) {
           /** @type {number} */
-          args[name].length = 0;
+          obj[name].length = 0;
         }
       }
       var b;
       var ref;
-      var builder = _.builder;
+      var self = _.builder;
       var _css = _.createSender;
       var func = _.createDefaultConfig;
       /** @type {function(!Object): ?} */
@@ -4495,31 +4536,31 @@
       var _clone = _.initConfigNormalizer;
       /** @type {function(!Object): ?} */
       var isArray = _.validateInitConfig;
-      var args = {};
-      events.forEach(function(callbackArgumentIndex) {
-        return args[callbackArgumentIndex] = [];
+      var obj = {};
+      events.forEach(function(sourcePropKey) {
+        return obj[sourcePropKey] = [];
       });
       /** @type {boolean} */
       var a = false;
       /** @type {boolean} */
       var inputId = false;
       /** @type {!Array} */
-      var torrentIds = [];
+      var p = [];
       /** @type {!Array} */
       var opts = [];
       var options = {
         getBuilder : function() {
-          return builder;
+          return self;
         },
         getSender : function() {
           return b;
         },
         getPreStartQueue : function() {
-          return torrentIds;
+          return p;
         },
         init : function(data) {
           if (a) {
-            add("already inited");
+            reject("already inited");
           } else {
             if (!(data && callback(data) && isArray(data))) {
               throw new Error("invalid InitConfig, init failed");
@@ -4552,7 +4593,7 @@
         },
         provide : function(name, type) {
           if (resolve(opts, name)) {
-            add("cannot provide " + name + ", reserved");
+            reject("cannot provide " + name + ", reserved");
           } else {
             /** @type {!Function} */
             options[name] = type;
@@ -4566,33 +4607,33 @@
               if (null != ref) {
                 ref.onReady(function() {
                   debug("start", inputId = true);
-                  torrentIds.forEach(function(n) {
+                  p.forEach(function(n) {
                     return e.build(n);
                   });
                   /** @type {!Array} */
-                  torrentIds = [];
+                  p = [];
                 });
               }
             }
           }
         },
-        report : function(arg) {
-          if (!!arg) {
-            if (arg = then(args.report)(arg)) {
+        report : function(data) {
+          if (!!data) {
+            if (data = debug(obj.report)(data)) {
               if (inputId) {
-                this.build(arg);
+                this.build(data);
               } else {
-                torrentIds.push(arg);
+                p.push(data);
               }
             }
           }
         },
-        build : function(type) {
+        build : function(data) {
           if (!!inputId) {
-            if (type = then(args.beforeBuild)(type)) {
-              if (!!(type = builder.build(type))) {
-                if (type = then(args.build)(type)) {
-                  this.send(type);
+            if (data = debug(obj.beforeBuild)(data)) {
+              if (!!(data = self.build(data))) {
+                if (data = debug(obj.build)(data)) {
+                  this.send(data);
                 }
               }
             }
@@ -4600,7 +4641,7 @@
         },
         send : function(data) {
           if (!!inputId) {
-            if (data = then(args.beforeSend)(data)) {
+            if (data = debug(obj.beforeSend)(data)) {
               b.send(data);
               debug("send", false, data);
             }
@@ -4609,18 +4650,18 @@
         destroy : function() {
           debug("beforeDestroy", true);
         },
-        on : function(type, listener) {
+        on : function(type, callback) {
           if ("init" === type && a || "start" === type && inputId) {
-            listener();
+            callback();
           } else {
-            if (args[type]) {
-              args[type].push(listener);
+            if (obj[type]) {
+              obj[type].push(callback);
             }
           }
         },
-        off : function(i, options) {
-          if (args[i]) {
-            args[i] = shallowCopy(args[i], options);
+        off : function(key, opts) {
+          if (obj[key]) {
+            obj[key] = trim(obj[key], opts);
           }
         }
       };
@@ -4631,30 +4672,30 @@
       validateInitConfig : decryptDownload,
       initConfigNormalizer : responseStatusSuccess,
       userConfigNormalizer : responseStatusError,
-      createSender : void 0 === courseSections ? function(self) {
-        return init({
+      createSender : void 0 === persistedDto ? function(self) {
+        return send({
           size : multipartSize,
           endpoint : getPath(self.domain),
           transport : api()
         });
-      } : courseSections,
-      builder : void 0 === value ? colWidths : value,
+      } : persistedDto,
+      builder : void 0 === value ? fragments : value,
       createDefaultConfig : void 0 === result ? notify : result,
       createConfigManager : constructor
     });
-    factory(data);
-    App(data);
-    handle(data);
-    sync(data);
-    getData(data);
-    next(data);
+    factory(options);
+    App(options);
+    handle(options);
+    open(options);
+    success(options);
+    fetch(options);
     var model;
-    result = remove(data, f, function(tResult, children, t) {
-      return forEach(tResult, children)(function() {
+    result = set(options, end, function(n, functions, t) {
+      return func(n, functions)(function() {
         var i = done(t);
         var method = i[0];
         i = i.slice(1);
-        data[method].apply(data, fn([], done(i), false));
+        options[method].apply(options, fn([], done(i), false));
       });
     });
     return (model = result).on("init", function() {
@@ -4673,41 +4714,41 @@
         });
       }
     }), result;
-  }(method = void 0 === method ? {} : method), (provider = undefined).on("start", function() {
-    var data = provider.config();
-    var id = data.userId;
+  }(index = void 0 === index ? {} : index), (_ref = args).on("start", function() {
+    var data = _ref.config();
+    var source = data.userId;
     data = data.sample;
-    data = validate(id, data, range, name);
-    provider.on("build", data);
-  }), obj = undefined, val = eq(key = void 0 === key ? value : key), method = createTest(key), cb = combine(obj, val, key), null !== (key = obj.p) && void 0 !== key && key.a && "observe" in obj.p.a && obj.p.a.observe(function(options) {
+    data = init(source, data, id, step);
+    _ref.on("build", data);
+  }), obj = args, track = mergeOptions(key = void 0 === key ? i : key), index = serializeDate(key), plugins = walk(obj, track, key), null !== (key = obj.p) && void 0 !== key && key.a && "observe" in obj.p.a && obj.p.a.observe(function(options) {
     var result = done(options, 5);
     result[0];
-    var existsGlobal = result[1];
-    var mergedConfig = result[2];
+    var dirname = result[1];
+    var existsGlobal = result[2];
     options = result[3];
     result = result[4];
-    cb(existsGlobal, mergedConfig, options, result);
+    plugins(dirname, existsGlobal, options, result);
   }), obj.on("init", function() {
     var ref;
     if (null !== (ref = obj.p) && void 0 !== ref) {
       ref.a.forEach(function(options) {
         var result = done(options, 5);
         result[0];
-        var existsGlobal = result[1];
-        var mergedConfig = result[2];
+        var dirname = result[1];
+        var existsGlobal = result[2];
         options = result[3];
         result = result[4];
-        cb(existsGlobal, mergedConfig, options, result);
+        plugins(dirname, existsGlobal, options, result);
       });
     }
     if (obj.p && obj.p.a) {
       /** @type {number} */
       obj.p.a.length = 0;
     }
-  }), obj.provide("precollect", cb), obj.on("provide", hook(obj, val, method)), (server = undefined).provide("sendEvent", function(text) {
+  }), obj.provide("precollect", plugins), obj.on("provide", stream(obj, track, index)), (results = args).provide("sendEvent", function(text) {
     text = decode(text);
     if (text) {
-      server.report({
+      results.report({
         ev_type : cssFormat,
         payload : text,
         extra : {
@@ -4715,100 +4756,100 @@
         }
       });
     }
-  }), server.provide("sendLog", function(node) {
-    node = parseNode(node);
-    if (node) {
-      server.report({
+  }), results.provide("sendLog", function(args) {
+    args = list(args);
+    if (args) {
+      results.report({
         ev_type : cssFormat,
-        payload : node,
+        payload : args,
         extra : {
           timestamp : Date.now()
         }
       });
     }
-  }), (self = undefined).on("init", function() {
+  }), (context = args).on("init", function() {
     var event;
-    var data = wrap(self, descWidth, branch);
+    var data = wrap(context, input, branch);
     if (data) {
-      data = done(setTimeout(main, extend(extend({}, data), {
-        initPid : null === (data = self.config()) || void 0 === data ? void 0 : data.pid,
+      data = done(require(main, extend(extend({}, data), {
+        initPid : null === (data = context.config()) || void 0 === data ? void 0 : data.pid,
         onPidUpdate : function(pid) {
-          self.set({
+          context.set({
             pid : pid,
             viewId : pid + "_" + Date.now(),
             actionId : void 0
           });
         }
-      }), self.report.bind(self)), 2);
+      }), context.report.bind(context)), 2);
       event = data[0];
       data = data[1];
-      self.on("config", function() {
-        event(self.config().pid);
+      context.on("config", function() {
+        event(context.config().pid);
       });
-      self.on("beforeDestroy", data);
-      self.provide("sendPageview", event);
+      context.on("beforeDestroy", data);
+      context.provide("sendPageview", event);
     }
-  }), (client = undefined).on("init", function() {
-    var indentPresHandled;
-    var data = wrap(client, path, j);
+  }), (model = args).on("init", function() {
+    var ignorePlaceholders;
+    var data = wrap(model, addVScroll, instance);
     if (data) {
       /** @type {boolean} */
-      indentPresHandled = false;
-      data = done(setTimeout(open, extend(extend({}, data), {
-        hookCbAtReq : stop(client)
-      }), function(n) {
-        return !indentPresHandled && client.report(n);
+      ignorePlaceholders = false;
+      data = done(require(result, extend(extend({}, data), {
+        hookCbAtReq : stop(model)
+      }), function(comment) {
+        return !ignorePlaceholders && model.report(comment);
       }), 1)[0];
-      client.on("beforeDestroy", function() {
+      model.on("beforeDestroy", function() {
         /** @type {boolean} */
-        indentPresHandled = true;
+        ignorePlaceholders = true;
       });
-      client.provide("wrapXhr", data);
+      model.provide("wrapXhr", data);
     }
-  }), (node = undefined).on("init", function() {
-    var verifyEnumerable;
-    var instance = wrap(node, url, context);
-    if (instance) {
+  }), (me = args).on("init", function() {
+    var headPartIsFound;
+    var result = wrap(me, url, frame);
+    if (result) {
       /** @type {boolean} */
-      verifyEnumerable = false;
-      instance = done(setTimeout(onLoad, extend(extend({}, instance), {
-        hookCbAtReq : stop(node)
-      }), function(callee) {
-        return !verifyEnumerable && node.report(callee);
+      headPartIsFound = false;
+      result = done(require(request, extend(extend({}, result), {
+        hookCbAtReq : stop(me)
+      }), function(part) {
+        return !headPartIsFound && me.report(part);
       }), 1)[0];
-      node.on("beforeDestroy", function() {
+      me.on("beforeDestroy", function() {
         /** @type {boolean} */
-        verifyEnumerable = true;
+        headPartIsFound = true;
       });
-      node.provide("wrapFetch", instance);
+      me.provide("wrapFetch", result);
     }
-  }), (params = undefined).on("init", function() {
+  }), (params = args).on("init", function() {
     var desc;
     var data = wrap(params, widgetDataKey, {});
     if (data) {
       desc = params.pp || Error;
-      setTimeout(exports, extend(extend({}, data), {
+      require(exports, extend(extend({}, data), {
         precollect : desc
-      }), process(params));
+      }), onRelease(params));
     }
-  }), (left = undefined).on("init", function() {
+  }), (elem = args).on("init", function() {
     var scrollHeightObserver;
-    var l = wrap(left, max, arg);
-    if (l) {
-      scrollHeightObserver = done(setTimeout(bind, l, process(left)), 1)[0];
-      initialize(function() {
+    var value = wrap(elem, definition, j);
+    if (value) {
+      scrollHeightObserver = done(require(initialize, value, onRelease(elem)), 1)[0];
+      clear(function() {
         return setTimeout(scrollHeightObserver, 200);
       });
     }
-  }), (a = undefined).on("init", function() {
+  }), (listener = args).on("init", function() {
     var callback;
     var cb;
-    var l = wrap(a, str, options);
-    if (l) {
-      l = (cb = done(setTimeout(start, l, b), 3))[0];
+    var result = wrap(listener, x, data);
+    if (result) {
+      result = (cb = done(require(start, result, undefined), 3))[0];
       callback = cb[1];
       cb = cb[2];
-      a.on("report", function(event) {
+      listener.on("report", function(event) {
         return "http" === event.ev_type && callback({
           type : "http",
           category : event.payload.api,
@@ -4821,27 +4862,27 @@
           timestamp : event.payload.request.timestamp
         }), event;
       });
-      a.on("beforeDestroy", cb);
-      a.provide("getBreadcrumbs", l);
-      a.provide("addBreadcrumb", callback);
+      listener.on("beforeDestroy", cb);
+      listener.provide("getBreadcrumbs", result);
+      listener.provide("addBreadcrumb", callback);
     }
-  }), (me = undefined).on("init", function() {
-    window.removeEventListener("error", me.pcErr, true);
-    window.removeEventListener("unhandledrejection", me.pcRej, true);
+  }), (that = args).on("init", function() {
+    window.removeEventListener("error", that.pcErr, true);
+    window.removeEventListener("unhandledrejection", that.pcRej, true);
     var cb;
-    var result = wrap(me, text, req);
+    var result = wrap(that, parameter, req);
     if (result) {
-      result = (cb = done(setTimeout(listen, result, function(data) {
-        if (me.getBreadcrumbs) {
-          data.payload.breadcrumbs = me.getBreadcrumbs();
+      result = (cb = done(require(bind, result, function(data) {
+        if (that.getBreadcrumbs) {
+          data.payload.breadcrumbs = that.getBreadcrumbs();
         }
-        me.report(data);
+        that.report(data);
       }), 2))[0];
       cb = cb[1];
-      me.on("beforeDestroy", cb);
-      me.provide("captureException", result);
+      that.on("beforeDestroy", cb);
+      that.provide("captureException", result);
     }
-  }), (ref = undefined).on("init", function() {
+  }), (ref = args).on("init", function() {
     var opts = ref.pp || Error;
     if (null !== (target = opts.observer) && void 0 !== target) {
       target.disconnect();
@@ -4849,14 +4890,14 @@
     var report;
     var target;
     var cb;
-    var item;
-    var root;
+    var e;
+    var type;
     var data = wrap(ref, processedItem, message);
     if (data) {
-      setTimeout(wrapper, extend(extend({}, data), {
+      require(wrapper, extend(extend({}, data), {
         precollect : opts
-      }), process(ref));
-      target = (cb = done(setTimeout(draw, 0, report = function(order) {
+      }), onRelease(ref));
+      target = (cb = done(require(keyboard, 0, report = function(order) {
         ref.report({
           ev_type : "performance",
           payload : order
@@ -4866,7 +4907,7 @@
       ref.provide("performanceInit", target);
       ref.provide("performanceSend", cb);
       if (data.longtask) {
-        cb = done(setTimeout(animate, {
+        cb = done(require(sync, {
           precollect : opts
         }, function(commentPayload) {
           ref.report({
@@ -4877,26 +4918,26 @@
         ref.on("beforeDestroy", cb);
       }
       if (data.cls) {
-        item = toJSON();
-        data = done(setTimeout(close, [opts], function(commentPayload) {
+        e = emit();
+        data = done(require(process, [opts], function(commentPayload) {
           ref.report({
             ev_type : "performance",
             payload : commentPayload,
             overrides : {
-              url : item
+              url : e
             }
           });
         }), 2);
-        root = data[0];
+        type = data[0];
         data = data[1];
         ref.on("beforeConfig", function(options) {
           if (options.viewId && options.viewId !== (null === (options = ref.config()) || void 0 === options ? void 0 : options.viewId)) {
-            root();
-            item = toJSON();
+            type();
+            e = emit();
           }
         });
         ref.on("beforeDestroy", data);
-        addEventListener(root);
+        on(type);
       }
       /** @type {number} */
       opts.entries.length = 0;
@@ -4907,31 +4948,31 @@
         report(data);
       });
     }
-  }), (model = undefined).on("init", function() {
+  }), (node = args).on("init", function() {
     var cb;
-    var result = wrap(model, parameter, i);
-    if (result) {
-      result = (cb = done(setTimeout(connect, result, model.report.bind(model)), 2))[0];
-      cb = cb[1];
-      model.on("beforeDestroy", cb);
-      model.provide("reportResourceError", result);
-    }
-  }), (data = undefined).on("init", function() {
-    var l = wrap(data, p, opts);
+    var l = wrap(node, str, options);
     if (l) {
-      l = done(setTimeout(end, l, function(d) {
-        var b = done(d, 2);
-        d = b[0];
-        b = b[1];
-        data.report(b ? extend(extend({}, d), {
+      l = (cb = done(require(setup, l, node.report.bind(node)), 2))[0];
+      cb = cb[1];
+      node.on("beforeDestroy", cb);
+      node.provide("reportResourceError", l);
+    }
+  }), (self = args).on("init", function() {
+    var data = wrap(self, path, size);
+    if (data) {
+      data = done(require(action, data, function(data) {
+        var result = done(data, 2);
+        data = result[0];
+        result = result[1];
+        self.report(result ? extend(extend({}, data), {
           extra : {
             sample_rate : 1
           }
-        }) : d);
+        }) : data);
       }), 1)[0];
-      data.on("beforeDestroy", l);
+      self.on("beforeDestroy", data);
     }
-  }), read(undefined), undefined);
+  }), execute(args), args);
   var valueOrObs = function() {
     var ret = apply();
     var cur = getCurrentScript();
@@ -4944,61 +4985,61 @@
       target.provide(name, valueOrObs[name]);
     });
   }
-  var removeEventListenerFn;
+  var remove;
   var element;
-  var x;
-  var y;
+  var a;
+  var b;
   var res = apply();
   var addEventListenerFn = getCurrentScript();
   if (res && addEventListenerFn) {
-    removeEventListenerFn = (null == (removeEventListenerFn = res[addEventListenerFn]) ? void 0 : removeEventListenerFn.q) || [];
+    remove = (null == (remove = res[addEventListenerFn]) ? void 0 : remove.q) || [];
     res[addEventListenerFn] = target;
-    removeEventListenerFn.forEach(function(obj) {
+    remove.forEach(function(o) {
       var element;
-      var out;
-      /** @type {!Object} */
-      out = obj;
-      obj = extend(extend({}, f(element = target)), {
-        url : out.pop(),
-        timestamp : out.pop()
+      var next;
+      /** @type {!Array} */
+      next = o;
+      o = extend(extend({}, end(element = target)), {
+        url : next.pop(),
+        timestamp : next.pop()
       });
-      forEach(element, obj)(function() {
-        element.apply(void 0, fn([], done(out), false));
+      func(element, o)(function() {
+        element.apply(void 0, fn([], done(next), false));
       });
     });
     /** @type {number} */
-    removeEventListenerFn.length = 0;
+    remove.length = 0;
     if (target.p) {
       if ("observe" in target.p.a) {
         console.warn("global precollect queue already updated");
       }
-      target.p.a = (x = target.p.a, y = [], x.observe = function(query) {
-        y.push(query);
-      }, x.push = function() {
+      target.p.a = (a = target.p.a, b = [], a.observe = function(children) {
+        b.push(children);
+      }, a.push = function() {
         var _Object$getPrototypeO;
         /** @type {!Array} */
-        var out = [];
+        var list = [];
         /** @type {number} */
         var i = 0;
         for (; i < arguments.length; i++) {
-          out[i] = arguments[i];
+          list[i] = arguments[i];
         }
-        return out.forEach(function(appid) {
-          y.forEach(function(t) {
+        return list.forEach(function(appid) {
+          b.forEach(function(t) {
             return t(appid);
           });
-        }), (_Object$getPrototypeO = [].push).call.apply(_Object$getPrototypeO, fn([x], done(out), false));
-      }, x);
+        }), (_Object$getPrototypeO = [].push).call.apply(_Object$getPrototypeO, fn([a], done(list), false));
+      }, a);
       if (element = target.precollect) {
         target.provide("precollect", function() {
           /** @type {!Array} */
-          var buffer = [];
+          var list = [];
           /** @type {number} */
           var i = 0;
           for (; i < arguments.length; i++) {
-            buffer[i] = arguments[i];
+            list[i] = arguments[i];
           }
-          return target.p.a.push(fn(["precollect"], done(buffer), false)), element.apply(void 0, fn([], done(buffer), false));
+          return target.p.a.push(fn(["precollect"], done(list), false)), element.apply(void 0, fn([], done(list), false));
         });
       }
     }

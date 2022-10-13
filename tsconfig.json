@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
-    "typeRoots": ["node_modules/@types"]
-  }
+    "importHelpers": true
+  },
+  "include": ["src/*", "src/**/*", "./typings.d.ts"]
 }

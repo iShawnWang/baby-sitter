@@ -19,8 +19,6 @@
   },
   "homepage": "https://github.com/iShawnWang/baby-sitter-sdk#readme",
   "devDependencies": {
-    "@apm-insight-web/upload-sourcemaps-webpack-plugin": "^1.0.0",
-    "@playwright/test": "^1.22.2",
     "tsup": "^6.1.3"
   },
   "dependencies": {
